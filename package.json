@@ -4,10 +4,8 @@
   "description": "Backend for API",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env DB_DATABASE=test_db jest --testTimeout=10000",
-    "test:watch": "cross-env DB_DATABASE=test_db jest --watch",
-    "testDB:drop": "/usr/local/mysql/bin/mysql --user=root --password=password -e 'DROP DATABASE IF EXISTS test_db;'",
-    "testDB:create": "/usr/local/mysql/bin/mysql --user=root --password=password -e 'CREATE DATABASE test_db;'"
+    "test": " Action_to_lunch",
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",

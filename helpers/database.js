@@ -1,5 +1,5 @@
 const mysql = require('promise-mysql');
-const info = requrie('../config');
+const info = require('../config');
 
 exports.run_query = async function run_query(query, values) {
     try{
