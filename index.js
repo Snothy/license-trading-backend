@@ -2,8 +2,12 @@ const Koa = require('koa');
 const app = new Koa();
 
 const users = require('./routes/users.js');
+const shelters = require('./routes/shelters.js')
+const dogs = require('./routes/dogs.js');
 
 app.use(users.routes());
+app.use(shelters.routes());
+app.use(dogs.routes());
 
 let port = process.env.PORT || 3000;
 

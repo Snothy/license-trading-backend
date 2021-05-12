@@ -1,20 +1,15 @@
 const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
-const model = require('../models/users');
+const model = require('../models/shelters');
 
-const router = Router({prefix : '/api/users'});
+const router = Router({prefix : '/api/shelters'});
 
 //ONLY TESTED GETALL, GETBYID, POST
-//user routes
 router.get('/', getAll);
-router.post('/', bodyparser(), addUser);
+router.post('/', bodyparser(), addShelter);
 router.get('/:id([0-9]{1,})', getById);
-router.put('/:id([0-9]{1,})', bodyparser(), updateUser);
-router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
-
-//favourites
-router.get('/:id([0-9]{1,})/favourites', getFavourites);
-router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites);
+router.put('/:id([0-9]{1,})', bodyparser(), updateShelter);
+router.del('/:id([0-9]{1,})', bodyparser(), removeShelter);
 
 async function getAll(ctx) {
     const result = await model.getAll();
@@ -27,14 +22,14 @@ async function getById(ctx) {
     const id = ctx.params.id;
     const result = await model.getById(id);
     if (result.length) {
-        const user = result[0];
-        ctx.body = user;
+        const shelter = result[0];
+        ctx.body = shelter;
     }
 }
 
-async function addUser(ctx) {
-    const user = ctx.request.body;
-    const result = await model.addUser(user);
+async function addShelter(ctx) {
+    const shelter = ctx.request.body;
+    const result = await model.addShelter(shelter);
     if (result.affectedrows) {
         const id = result.Id;
         console.log(result.insertId);
@@ -43,35 +38,27 @@ async function addUser(ctx) {
     }
 }
 
-async function updateUser(ctx) {
+async function updateShelter(ctx) {
     const id = ctx.params.id;
     //Checking if user exists
     let result = await model.getById(id);
     if (result.length) {
-        let user = result[0];
-        const {ID, dateRegistered, ...body} = ctx.request.body;
-        Object.assign(user,body);
-        result = model.updateUser(user);
+        let shelter = result[0];
+        const {ID, ...body} = ctx.request.body;
+        Object.assign(shelter, body);
+        result = model.updateShelter(shelter);
         if (result.affectedrows) {
             ctx.body = {ID : id, deleted: true};
         }
     }
 }
 
-async function removeUser(ctx) {
+async function removeShelter(ctx) {
     const id = ctx.params.id;
-    let result = await model.removeUser(id);
+    let result = await model.removeShelter(id);
     if (result.affectedrows) {
         ctx.body = {ID : id, deleted : true};
     }
-}
-
-async function getFavourites(ctx) {
-    return null;
-}
-
-async function setFavourites(ctx) {
-    return null;
 }
 
 module.exports = router;

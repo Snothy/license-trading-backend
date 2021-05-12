@@ -1,20 +1,15 @@
 const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
-const model = require('../models/users');
+const model = require('../models/dogs');
 
-const router = Router({prefix : '/api/users'});
+const router = Router({prefix : '/api/dogs'});
 
 //ONLY TESTED GETALL, GETBYID, POST
-//user routes
 router.get('/', getAll);
-router.post('/', bodyparser(), addUser);
+router.post('/', bodyparser(), addDog);
 router.get('/:id([0-9]{1,})', getById);
-router.put('/:id([0-9]{1,})', bodyparser(), updateUser);
-router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
-
-//favourites
-router.get('/:id([0-9]{1,})/favourites', getFavourites);
-router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites);
+router.put('/:id([0-9]{1,})', bodyparser(), updateDog);
+router.del('/:id([0-9]{1,})', bodyparser(), removeDog);
 
 async function getAll(ctx) {
     const result = await model.getAll();
@@ -27,14 +22,14 @@ async function getById(ctx) {
     const id = ctx.params.id;
     const result = await model.getById(id);
     if (result.length) {
-        const user = result[0];
-        ctx.body = user;
+        const dog = result[0];
+        ctx.body = dog;
     }
 }
 
-async function addUser(ctx) {
-    const user = ctx.request.body;
-    const result = await model.addUser(user);
+async function addDog(ctx) {
+    const dog = ctx.request.body;
+    const result = await model.addDog(dog);
     if (result.affectedrows) {
         const id = result.Id;
         console.log(result.insertId);
@@ -43,35 +38,27 @@ async function addUser(ctx) {
     }
 }
 
-async function updateUser(ctx) {
+async function updateDog(ctx) {
     const id = ctx.params.id;
-    //Checking if user exists
+    //Checking if dog exists
     let result = await model.getById(id);
     if (result.length) {
-        let user = result[0];
+        let dog = result[0];
         const {ID, dateRegistered, ...body} = ctx.request.body;
-        Object.assign(user,body);
-        result = model.updateUser(user);
+        Object.assign(dog,body);
+        result = model.updateDog(dog);
         if (result.affectedrows) {
             ctx.body = {ID : id, deleted: true};
         }
     }
 }
 
-async function removeUser(ctx) {
+async function removeDog(ctx) {
     const id = ctx.params.id;
-    let result = await model.removeUser(id);
+    let result = await model.removeDog(id);
     if (result.affectedrows) {
         ctx.body = {ID : id, deleted : true};
     }
-}
-
-async function getFavourites(ctx) {
-    return null;
-}
-
-async function setFavourites(ctx) {
-    return null;
 }
 
 module.exports = router;

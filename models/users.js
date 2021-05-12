@@ -15,7 +15,7 @@ exports.getAll = async function getAll() {
     return data;
 }
 
-exports.createUser = async function createUser(user) {
+exports.addUser = async function addUser(user) {
     const query = "INSERT INTO users SET ?;";
     const data = db.run_query(query, user);
     return data;
@@ -33,4 +33,12 @@ exports.removeUser = async function removeUser(id) {
     const values = [id];
     const data = db.run_query(query, values);
     return data;
+}
+
+exports.getFavourites = async function getFavourites(id) {
+    return null;
+}
+
+exports.setFavourites = async function setFavourites(id) {
+    return null;
 }
