@@ -1,11 +1,11 @@
 CREATE TABLE dogs  (ID INT NOT NULL AUTO_INCREMENT,
-		    name VARCHAR(15) NOT NULL,
-		    breed VARCHAR(15) NOT NULL,
+			shelter INT,
+		    name VARCHAR(24) NOT NULL,
+		    breed VARCHAR(24) NOT NULL,
 		    age INT NOT NULL,
 		    description TEXT,
-		    colour NOT NULL,
+		    colour VARCHAR(24) NOT NULL,
 		    dateRegistered TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		    avatarURL VARCHAR(64),
-		    shelter VARCHAR(64) NOT NULL,
 		    PRIMARY KEY (ID),
-		    FOREIGN KEY (shelter) REFERENCES shelters (location));
+		    FOREIGN KEY (shelter) REFERENCES shelters (ID));

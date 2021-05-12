@@ -4,7 +4,10 @@
   "description": "Backend for API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env DB_DATABASE=test_db jest --testTimeout=10000",
+    "test:watch": "cross-env DB_DATABASE=test_db jest --watch",
+    "testDB:drop": "/usr/local/mysql/bin/mysql --user=root --password=password -e 'DROP DATABASE IF EXISTS test_db;'",
+    "testDB:create": "/usr/local/mysql/bin/mysql --user=root --password=password -e 'CREATE DATABASE test_db;'"
   },
   "repository": {
     "type": "git",
@@ -15,6 +18,8 @@
   "dependencies": {
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
-    "koa-router": "^10.0.0"
+    "koa-router": "^10.0.0",
+    "mysql": "^2.18.1",
+    "promise-mysql": "^5.0.3"
   }
 }
