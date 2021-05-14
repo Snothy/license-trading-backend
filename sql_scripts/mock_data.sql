@@ -24,9 +24,10 @@ INSERT INTO favourites (user_ID, dog_ID) VALUES (1,2);
 INSERT INTO favourites (user_ID, dog_ID) VALUES (2,2);
 
 chat
-INSERT INTO chat (user1, user2) VALUES (1,2);
-INSERT INTO chat (user1, user2) VALUES (1,3);
-INSERT INTO chat (user1, user2) VALUES (2,3);
+INSERT INTO chat (user_ID, shelter_ID) VALUES (1,1);
+INSERT INTO chat (user_ID, shelter_ID) VALUES (2,1);
+INSERT INTO chat (user_ID, shelter_ID) VALUES (2,2);
+INSERT INTO chat (user_ID, shelter_ID) VALUES (2,3);
 
 chat_message
 INSERT INTO chat_message (chat_ID, user_ID, message_content) VALUES (1, 1, 'Do you really want this dog, John?');
