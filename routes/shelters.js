@@ -12,12 +12,6 @@ router.get('/:id([0-9]{1,})', getById);                     //all users
 router.put('/:id([0-9]{1,})', bodyparser(), updateShelter); //admin only
 router.del('/:id([0-9]{1,})', bodyparser(), removeShelter); //admin only
 
-router.get('/users', getUsersShelters);                                 //admin only   
-router.post('/users/:id([0-9]{1,})', bodyparser(), assignUserShelter);  //admin only
-router.del('/users/:id([0-9]{1,})', bodyparser(), removeUserShelter);   //admin only
-
-
-
 
 async function getAllShelters(ctx) {
     const result = await model.getAllShelters();

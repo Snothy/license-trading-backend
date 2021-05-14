@@ -32,15 +32,3 @@ exports.removeShelter = async function removeShelter(id) {
     const data = db.run_query(query, values);
     return data;
 }
-
-exports.getUsersShelters = async function getUsersShelters() {
-    return null;
-}
-
-exports.assignUserShelter = async function assignUserShelter(user_id, shelter_id) {
-    return null;
-}
-
-exports.removeUserShelter = async function removeUserShelter(user_id, shelter_id) {
-    return null;
-}

@@ -42,3 +42,33 @@ exports.getFavourites = async function getFavourites(id) {
 exports.setFavourites = async function setFavourites(id) {
     return null;
 }
+
+//SHELTERS
+exports.getUserShelters = async function getUserShelters(user_id) {
+    const query = "SELECT * FROM users_shelters WHERE user_ID = ?;";
+    values = [user_id];
+    const data = await db.run_query(query, values);
+    return data;
+}
+
+exports.assignUserShelter = async function assignUserShelter(user_id, shelter_id) {
+    const query = "INSERT INTO users_shelters (user_ID,shelter_ID) VALUES (?, ?);";
+    const values = [user_id, shelter_id];
+    console.log(values);
+    const data = await db.run_query(query, values);
+    return data;
+}
+
+exports.hasShelter = async function hasShelter(user_id, shelter_id){
+    const query = "SELECT * FROM users_shelters WHERE user_ID = ? AND shelter_ID = ?;";
+    const values = [user_id, shelter_id];
+    const data = await db.run_query(query, values);
+    return data.length>0;
+}
+
+exports.removeUserShelter = async function removeUserShelter(user_id, shelter_id) {
+    const query = "DELETE FROM users_shelters WHERE user_ID = ? AND shelter_ID = ?;";
+    const values = [user_id, shelter_id];
+    const data = await db.run_query(query, values);
+    return data;
+}
