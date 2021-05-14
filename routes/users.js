@@ -18,8 +18,8 @@ router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites);
 
 //shelters
 router.get('/:id([0-9]{1,})/shelters', getUserShelters);                    //admin only   
-router.post('/:id([0-9]{1,}/shelters)', bodyparser(), assignUserShelter);   //admin only
-router.del('/:id([0-9]{1,}/shelters)', bodyparser(), removeUserShelter);    //admin only
+router.post('/:id([0-9]{1,})/shelters', bodyparser(), assignUserShelter);   //admin only
+router.del('/:id([0-9]{1,})/shelters', bodyparser(), removeUserShelter);    //admin only
 
 async function getAll(ctx) {
     const result = await model.getAll();
@@ -92,7 +92,6 @@ async function getUserShelters(ctx) {
 async function assignUserShelter(ctx) {
     const {id:user_id} = ctx.params;
     const {shelter_id} = ctx.request.body;
-    console.log(shelter_id);
     const hasShelter = await model.hasShelter(user_id, shelter_id);
     if(hasShelter) {
         ctx.status = 409; //conflict 

@@ -54,7 +54,7 @@ exports.getUserShelters = async function getUserShelters(user_id) {
 exports.assignUserShelter = async function assignUserShelter(user_id, shelter_id) {
     const query = "INSERT INTO users_shelters (user_ID,shelter_ID) VALUES (?, ?);";
     const values = [user_id, shelter_id];
-    console.log(values);
+    //console.log(values);
     const data = await db.run_query(query, values);
     return data;
 }
