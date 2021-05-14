@@ -32,7 +32,7 @@ async function getById(ctx) {
 async function addShelter(ctx) {
     const shelter = ctx.request.body;
     const result = await model.addShelter(shelter);
-    if (result.affectedrows) {
+    if (result.affectedRows) {
         const id = result.Id;
         console.log(result.insertId);
         ctx.status = 201;
@@ -49,8 +49,8 @@ async function updateShelter(ctx) {
         const {ID, ...body} = ctx.request.body;
         Object.assign(shelter, body);
         result = model.updateShelter(shelter);
-        if (result.affectedrows) {
-            ctx.body = {ID : id, deleted: true};
+        if (result.affectedRows) {
+            ctx.body = {ID : id, updated: true};
         }
     }
 }
@@ -58,7 +58,7 @@ async function updateShelter(ctx) {
 async function removeShelter(ctx) {
     const id = ctx.params.id;
     let result = await model.removeShelter(id);
-    if (result.affectedrows) {
+    if (result.affectedRows) {
         ctx.body = {ID : id, deleted : true};
     }
 }
