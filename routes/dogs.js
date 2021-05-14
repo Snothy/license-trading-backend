@@ -30,7 +30,7 @@ async function getById(ctx) {
 async function addDog(ctx) {
     const dog = ctx.request.body;
     const result = await model.addDog(dog);
-    if (result.affectedrows) {
+    if (result.affectedRows) {
         const id = result.Id;
         console.log(result.insertId);
         ctx.status = 201;
@@ -47,7 +47,7 @@ async function updateDog(ctx) {
         const {ID, dateRegistered, ...body} = ctx.request.body;
         Object.assign(dog,body);
         result = model.updateDog(dog);
-        if (result.affectedrows) {
+        if (result.affectedRows) {
             ctx.body = {ID : id, deleted: true};
         }
     }
@@ -56,7 +56,7 @@ async function updateDog(ctx) {
 async function removeDog(ctx) {
     const id = ctx.params.id;
     let result = await model.removeDog(id);
-    if (result.affectedrows) {
+    if (result.affectedRows) {
         ctx.body = {ID : id, deleted : true};
     }
 }

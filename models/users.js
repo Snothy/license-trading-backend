@@ -17,48 +17,70 @@ exports.getAll = async function getAll() {
 
 exports.addUser = async function addUser(user) {
     const query = "INSERT INTO users SET ?;";
-    const data = db.run_query(query, user);
+    const data = await db.run_query(query, user);
     return data;
 }
 
 exports.updateUser = async function updateUser(user) {
     const query = "UPDATE users SET ? WHERE ID = ?;";
     const values = [user, user.ID];
-    const data = db.run_query(query, values);
+    const data = await db.run_query(query, values);
     return data;
 }
 
 exports.removeUser = async function removeUser(id) {
     const query = "DELETE FROM users WHERE ID = ?;";
     const values = [id];
-    const data = db.run_query(query, values);
+    const data = await db.run_query(query, values);
     return data;
 }
 
 
 //FAVOURITES
 exports.getFavourites = async function getFavourites(id) {
-    return null;
+    const query = "SELECT * FROM favourites WHERE user_ID = ?;";
+    const values = [id];
+    const data = await db.run_query(query,values);
+    //join statement
+    return data;
 }
 
 exports.setFavourites = async function setFavourites(id) {
+    //when viewing a dog a user can add to favourites
+    //might want to move this to the dogs route for dogs/:id
+    //this requires a logged in users user_ID
     return null;
 }
 
 
 //ROLES
-exports.assignUserRole = async function assignUserRole(user_id, role_id) {
-    const query = "INSERT INTO users_roles (user_ID,role_ID) VALUES (?, ?);";
-    const values = [user_id, role_id];
-    const data = db.run_query(query, values);
-    //console.log(query);
-    //console.log(values);
+
+exports.getUserRoles = async function getUserRoles(user_id) {
+    const query = "SELECT * FROM users_roles WHERE user_ID = ?;";
+    values = [user_id];
+    const data = await db.run_query(query, values);
     return data;
 }
 
-exports.removeUserRole = async function removeUserRole(user_id, role_id) {
-    const query = "DELETE FROM users_roles WHERE (user_ID, role_ID) VALUES (?, ?);";
+exports.assignUserRole = async function assignUserRole(user_id, role_id) {
+    const query = "INSERT INTO users_roles (user_ID,role_ID) VALUES (?, ?);";
     const values = [user_id, role_id];
-    const data = db.run_query(query, values);
+    const data = await db.run_query(query, values);
+    //console.log(query);
+    //console.log(data);
+    return data;
+}
+
+exports.hasRole = async function hasRole(user_id, role_id){
+    const query = "SELECT * FROM users_roles WHERE user_ID = ? AND role_ID = ?;";
+    const values = [user_id, role_id];
+    const data = await db.run_query(query, values);
+    return data.length>0;
+}
+
+exports.removeUserRole = async function removeUserRole(user_id, role_id) {
+    const query = "DELETE FROM users_roles WHERE user_ID = ? AND role_ID = ?;";
+    const values = [user_id, role_id];
+    const data = await db.run_query(query, values);
     return data;
 }
