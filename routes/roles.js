@@ -8,11 +8,27 @@ const router = Router({prefix : '/api/roles'});
 router.get('/', getAllRoles);                               //list all roles
 router.post('/', bodyparser(), createRole);                 //create new roles
 
+router.get('/:id([0-9]{1,})', bodyparser(), getById);
 router.put('/:id([0-9]{1,})', bodyparser(), updateRole);    //update role
 router.del('/:id([0-9]{1,})', bodyparser(), removeRole);    //remove role
 
-router.get('/users', getUsersRoles);                                //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
-router.post('/users/:id([0-9]{1,})', bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
-router.del('/users/:id([0-9]{1,})', bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
 
+async function getAllRoles(ctx) {
+    return null;
+}
 
+async function createRole(ctx) {
+    return null;
+}
+
+async function getById(ctx) {
+    return null;
+}
+
+async function updateRole(ctx) {
+    return null;
+}
+
+async function removeRole(ctx) {
+    return null;
+}

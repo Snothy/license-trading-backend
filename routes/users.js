@@ -16,6 +16,11 @@ router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
 router.get('/:id([0-9]{1,})/favourites', getFavourites);
 router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites);
 
+//roles ADMIN ONLY
+//router.get('/roles', getUsersRoles);                                //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
+router.post('/roles/:id([0-9]{1,})', bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
+router.del('/roles/:id([0-9]{1,})', bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
+
 async function getAll(ctx) {
     const result = await model.getAll();
     if (result.length) {
@@ -37,7 +42,7 @@ async function addUser(ctx) {
     const result = await model.addUser(user);
     if (result.affectedrows) {
         const id = result.Id;
-        console.log(result.insertId);
+        //console.log(result.insertId);
         ctx.status = 201;
         ctx.body = {ID: id, created : true, link : `${ctx.request.path}/${id}`};
     }
@@ -71,6 +76,14 @@ async function getFavourites(ctx) {
 }
 
 async function setFavourites(ctx) {
+    return null;
+}
+
+async function assignUserRole(ctx) {
+    return null;
+}
+
+async function removeUserRole(ctx) {
     return null;
 }
 
