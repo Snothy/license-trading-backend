@@ -14,7 +14,7 @@ exports.getById = async function getById(role_id) {
 }
 
 exports.createRole = async function createRole(role) {
-    const query = "INSERT INTO roles SET = ?;";
+    const query = "INSERT INTO roles SET ?;";
     const data = await db.run_query(query, role);
     return data;
 }

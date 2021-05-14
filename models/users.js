@@ -18,6 +18,7 @@ exports.getAll = async function getAll() {
 exports.addUser = async function addUser(user) {
     const query = "INSERT INTO users SET ?;";
     const data = await db.run_query(query, user);
+    console.log(data);
     return data;
 }
 

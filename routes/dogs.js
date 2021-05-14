@@ -48,7 +48,7 @@ async function updateDog(ctx) {
         Object.assign(dog,body);
         result = model.updateDog(dog);
         if (result.affectedRows) {
-            ctx.body = {ID : id, deleted: true};
+            ctx.body = {ID : id, updated: true};
         }
     }
 }

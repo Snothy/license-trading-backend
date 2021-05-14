@@ -60,9 +60,9 @@ async function updateUser(ctx) {
         let user = result[0];
         const {ID, dateRegistered, ...body} = ctx.request.body;
         Object.assign(user,body);
-        result = model.updateUser(user);
+        result = await model.updateUser(user);
         if (result.affectedRows) {
-            ctx.body = {ID : id, deleted: true};
+            ctx.body = {ID : id, updated: true};
         }
     }
 }
