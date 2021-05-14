@@ -5,14 +5,16 @@ const model = require('../models/shelters');
 const router = Router({prefix : '/api/shelters'});
 
 //ONLY TESTED GETALL, GETBYID, POST
-router.get('/', getAll);
-router.post('/', bodyparser(), addShelter);
-router.get('/:id([0-9]{1,})', getById);
-router.put('/:id([0-9]{1,})', bodyparser(), updateShelter);
-router.del('/:id([0-9]{1,})', bodyparser(), removeShelter);
+router.get('/', getAllShelters);            //all users
+router.post('/', bodyparser(), addShelter); //admin only
 
-async function getAll(ctx) {
-    const result = await model.getAll();
+router.get('/:id([0-9]{1,})', getById);                     //all users
+router.put('/:id([0-9]{1,})', bodyparser(), updateShelter); //admin only
+router.del('/:id([0-9]{1,})', bodyparser(), removeShelter); //admin only
+
+
+async function getAllShelters(ctx) {
+    const result = await model.getAllShelters();
     if (result.length) {
         ctx.body = result;
     }

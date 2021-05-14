@@ -7,7 +7,7 @@ exports.getById = async function getById(id) {
     return data;
 }
 
-exports.getAll = async function getAll() {
+exports.getAllShelters = async function getAllShelters() {
     const query = "SELECT * FROM shelters;";
     const data = await db.run_query(query);
     return data;

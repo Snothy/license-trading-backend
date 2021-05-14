@@ -16,6 +16,11 @@ router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
 router.get('/:id([0-9]{1,})/favourites', getFavourites);
 router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites);
 
+//shelters
+router.get('/:id([0-9]{1,})/shelters', getUserShelters);                    //admin only   
+router.post('/:id([0-9]{1,})/shelters', bodyparser(), assignUserShelter);   //admin only
+router.del('/:id([0-9]{1,})/shelters', bodyparser(), removeUserShelter);    //admin only
+
 async function getAll(ctx) {
     const result = await model.getAll();
     if (result.length) {
@@ -66,12 +71,52 @@ async function removeUser(ctx) {
     }
 }
 
+//FAVOURITES
 async function getFavourites(ctx) {
     return null;
 }
 
 async function setFavourites(ctx) {
     return null;
+}
+
+//SHELTERS | admin only
+async function getUserShelters(ctx) {
+    const {id} = ctx.params;
+    const result = await model.getUserShelters(id);
+    if (result.length) {
+        ctx.body = {shelters : result};
+    }
+}
+
+async function assignUserShelter(ctx) {
+    const {id:user_id} = ctx.params;
+    const {shelter_id} = ctx.request.body;
+    const hasShelter = await model.hasShelter(user_id, shelter_id);
+    if(hasShelter) {
+        ctx.status = 409; //conflict 
+        return ctx.body = {assigned : false};
+    }
+    const result = await model.assignUserShelter(user_id, shelter_id);
+    if(result.affectedRows) {
+        ctx.status = 201;
+        ctx.body = {assigned : true};
+    }
+}
+
+async function removeUserShelter(ctx) {
+    const {id:user_id} = ctx.params;
+    const {shelter_id} = ctx.request.body;
+    const hasShelter = await model.hasShelter(user_id, shelter_id);
+    if(!hasShelter) {
+        ctx.status = 409; //conflict 
+        return ctx.body = {removed : false};
+    }
+    const result = await model.removeUserShelter(user_id, shelter_id);
+    if(result.affectedRows) {
+        ctx.status = 201;
+        ctx.body = {removed : true};
+    }
 }
 
 module.exports = router;
