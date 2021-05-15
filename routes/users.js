@@ -25,7 +25,7 @@ router.get('/:id([0-9]{1,})/shelters', getUserShelters);                    //ad
 router.post('/:id([0-9]{1,})/shelters', bodyparser(), assignUserShelter);   //admin only
 router.del('/:id([0-9]{1,})/shelters', bodyparser(), removeUserShelter);    //admin only
 //roles ADMIN ONLY
-router.get('/:id([0-9]{1,})/roles', getUserRoles);                                //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
+router.get('/:id([0-9]{1,})/roles', getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
 router.post('/:id([0-9]{1,})/roles', bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
 router.del('/:id([0-9]{1,})/roles', bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
 

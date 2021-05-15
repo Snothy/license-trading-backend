@@ -20,7 +20,12 @@ router.del('/:id([0-9]{1,})', bodyparser(), removeMessage);     //staff can remo
 
 
 async function getAllChats(ctx) {
-    const result = await model.getAllChats();
+    //get user_id from login context ->
+    //hardcoded for testing
+    const user_id = 6       //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
+    //hardcoded for testing 
+
+    const result = await model.getAllChats(user_id);
     if (result.length) {
         ctx.body = result;
     }
@@ -32,7 +37,7 @@ async function createChat(ctx) {
     //need to get shelter/:id from ctx.params?
 
     //hardcoded for testing
-    const chat = {user_ID : 5, shelter_ID : 1};
+    const chat = {user_ID : 4, shelter_ID : 1};
     //hardcoded for testing
 
     const result = await model.createChat(chat);
@@ -54,10 +59,16 @@ async function getById(ctx) {
 
 async function createMessage(ctx) {
     //get user_id from logged in context
-    const chat_id = ctx.params.id;
-    const message_content = ctx.request.body;
+    //hardcorded for testing
+    const user_id = 5;
+    //hardcoded for testing 
 
-    const message = {chat_ID : chat_id, user_ID : user_ID, message_content : message_content};
+    const chat_id = ctx.params.id;
+    const message_content = Object.values(ctx.request.body); //message is an object {message_content : "message"}
+    //console.log(message_content)
+
+
+    const message = {chat_ID : chat_id, user_ID : user_id, message_content};
     const result = await model.createMessage(message);
     if(result.affectedRows) {
         ctx.status = 201;
