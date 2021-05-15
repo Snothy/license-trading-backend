@@ -1,6 +1,6 @@
 CREATE TABLE chat (ID INT NOT NULL AUTO_INCREMENT,
-		   user1 INT,
-		   user2 INT,
+		   user_ID INT,
+		   shelter_ID INT,
 		   PRIMARY KEY (ID),
-		   FOREIGN KEY (user1) REFERENCES users (ID),
-		   FOREIGN KEY (user2) REFERENCES users (ID));
+		   FOREIGN KEY (user_ID) REFERENCES users (ID),
+		   FOREIGN KEY (shelter_ID) REFERENCES shelters (ID));

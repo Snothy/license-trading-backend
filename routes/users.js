@@ -8,13 +8,17 @@ const router = Router({prefix : '/api/users'});
 //user routes
 router.get('/', getAll);
 router.post('/', bodyparser(), addUser);
+//login
 router.get('/:id([0-9]{1,})', getById);
 router.put('/:id([0-9]{1,})', bodyparser(), updateUser);
 router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
 
 //favourites
-router.get('/:id([0-9]{1,})/favourites', getFavourites);
-router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites);
+router.get('/:id([0-9]{1,})/favourites', getFavourites); //List all favourite dogs 
+router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites); //add new dog (should be done from api/dogs or api/dogs/:id [button to add to fav])
+
+//???crud for roles??? here or separate route? (do i even make crud for roles?)
+//implement error handling for all routes
 
 //shelters
 router.get('/:id([0-9]{1,})/shelters', getUserShelters);                    //admin only   
