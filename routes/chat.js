@@ -13,6 +13,7 @@ const router = Router({prefix : '/api/chat'});
 
 router.get('/', getAllChats);                                   //perform role check and list all instances of chats the user belongs to
 router.post('/', bodyparser(), createChat);                     //create new chat between user and shelter (done at shelter/:id uri to get the shelters id)
+//create delete chat feature that deletes the chat after X amount of time of inactivity
 
 router.get('/:id([0-9]{1,})', getById);                         //using the chat_ID we find & list all chat messages that belong to that chat
 router.post('/:id([0-9]{1,})', bodyparser(), createMessage);    //add chat message to chat_ID from user_ID
@@ -22,7 +23,8 @@ router.del('/:id([0-9]{1,})', bodyparser(), removeMessage);     //staff can remo
 async function getAllChats(ctx) {
     //get user_id from login context ->
     //hardcoded for testing
-    const user_id = 6       //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
+    //1 is admin, 5 is user
+    const user_id = 5      //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
     //hardcoded for testing 
 
     const result = await model.getAllChats(user_id);
@@ -37,10 +39,13 @@ async function createChat(ctx) {
     //need to get shelter/:id from ctx.params?
 
     //hardcoded for testing
-    const chat = {user_ID : 4, shelter_ID : 1};
+    const chat = {user_ID : 5, shelter_ID : 2};
     //hardcoded for testing
 
     const result = await model.createChat(chat);
+
+    //HANDLE EXCEPTION IF CHAT ALREADY EXISTS
+
     if (result.affectedRows) {
         const id = result.ID;
         ctx.status = 201;
@@ -60,7 +65,7 @@ async function getById(ctx) {
 async function createMessage(ctx) {
     //get user_id from logged in context
     //hardcorded for testing
-    const user_id = 5;
+    const user_id = 1;
     //hardcoded for testing 
 
     const chat_id = ctx.params.id;

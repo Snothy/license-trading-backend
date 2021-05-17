@@ -2,6 +2,7 @@ const db = require('../helpers/database');
 
 exports.getAllRoles = async function getAllRoles() {
     const query = "SELECT * FROM roles;";
+    //const query = "SELECT roles.* FROM roles JOIN users_roles ON (roles.ID = users_roles.role_ID) WHERE users_roles.user_ID = 1;";
     const data = await db.run_query(query);
     return data;
 }

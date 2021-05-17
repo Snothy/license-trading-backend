@@ -14,7 +14,7 @@ router.del('/:id([0-9]{1,})', bodyparser(), removeRole);    //remove role
 
 
 async function getAllRoles(ctx) {
-    console.log('aaa')
+    //console.log('aaa')
     const result = await model.getAllRoles();
     if (result.length) {
         ctx.body = result;

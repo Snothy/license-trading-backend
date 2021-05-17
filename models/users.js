@@ -55,13 +55,16 @@ exports.setFavourites = async function setFavourites(id) {
 
 //SHELTERS
 exports.getUserShelters = async function getUserShelters(user_id) {
-    const query = "SELECT * FROM users_shelters WHERE user_ID = ?;";
+    //const query = "SELECT * FROM users_shelters WHERE user_ID = ?;";
+    const query = "SELECT shelters.* FROM shelters JOIN users_shelters ON (shelters.ID = users_shelters.shelter_ID) WHERE users_shelters.user_ID = ?;";
     values = [user_id];
     const data = await db.run_query(query, values);
     return data;
 }
 
 exports.assignUserShelter = async function assignUserShelter(user_id, shelter_id) {
+    //CANT ASSIGN SHELTER TO NON-STAFF MEMBERS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     const query = "INSERT INTO users_shelters (user_ID,shelter_ID) VALUES (?, ?);";
     const values = [user_id, shelter_id];
     //console.log(values);
@@ -86,7 +89,9 @@ exports.removeUserShelter = async function removeUserShelter(user_id, shelter_id
 //ROLES
 
 exports.getUserRoles = async function getUserRoles(user_id) {
-    const query = "SELECT * FROM users_roles WHERE user_ID = ?;";
+    //const query = "SELECT * FROM users_roles WHERE user_ID = ?;";
+    const query = "SELECT roles.* FROM roles JOIN users_roles ON (roles.ID = users_roles.role_ID) WHERE users_roles.user_ID = ?;";
+    //const query = "SELECT roles."
     values = [user_id];
     const data = await db.run_query(query, values);
     return data;
@@ -102,7 +107,7 @@ exports.assignUserRole = async function assignUserRole(user_id, role_id) {
     return data;
 }
 
-exports.hasRole = async function hasRole(user_id, role_id){
+exports.hasRole = async function hasRole(user_id, role_id){ 
     const query = "SELECT * FROM users_roles WHERE user_ID = ? AND role_ID = ?;";
     const values = [user_id, role_id];
     const data = await db.run_query(query, values);

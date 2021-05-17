@@ -1,7 +1,7 @@
 const db = require('../helpers/database');
 
 exports.getById = async function getById(id) {
-    const query = "SELECT * FROM dogs WHERE ID = ?;";
+    const query = "SELECT ID, name, breed, age, description, dateRegistered, avatarURL FROM dogs WHERE ID = ?;";
     const values = [id];
     const data = await db.run_query(query, values);
     return data;

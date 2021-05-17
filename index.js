@@ -17,3 +17,4 @@ let port = process.env.PORT || 3000;
 
 app.listen(port);
 console.log(`API server running on port ${port}`);
+console.log('https://opera-ski-3000.codio-box.uk/api/');

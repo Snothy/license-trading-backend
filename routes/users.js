@@ -138,6 +138,7 @@ async function removeUserShelter(ctx) {
 //ROLES
 async function getUserRoles(ctx) {
     const {id} = ctx.params;
+    console.log(id);
     const result = await model.getUserRoles(id);
     if (result.length) {
         ctx.body = {roles : result};
