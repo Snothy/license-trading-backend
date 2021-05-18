@@ -17,15 +17,16 @@ function issueJwt(user) {
     //console.log(username);
     const expiresIn = '2w';
 
+    //payload passed into the verification strategy function 
     const payload = {};
-    payload.sub = username;
+    payload.sub = {username: username, password : user[0].password};
     payload.iat = Date.now();
     //console.log('a');
     //console.log(payload);
     //console.log(payload);
     //console.log(username);
     //console.log("q");
-
+    //console.log(payload.sub);
     const signedToken = jwt.sign(payload, keyPrivate, {expiresIn: expiresIn, algorithm: "RS256", });
     /*
     console.log(signedToken);

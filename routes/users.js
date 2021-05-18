@@ -194,12 +194,15 @@ async function login(ctx) {
 async function createUser(ctx) {
     //console.log('a');
     const data = ctx.request.body;
+    const password = ctx.request.body.password
     //console.log(data);
     const result = await model.createUser(data);
     if (result.affectedRows) {
         const id = result.insertId;
         ctx.status = 201;
         const userData = await model.findByUsername(data.username);
+        userData[0].password = password;
+        //console.log(userData);
         const jwt = await issueJwt.issueJwt(userData); //assigning the user a JWT
         //the front end takes the assigned token and stores it somewhere for use for future transactions
 
