@@ -1,4 +1,5 @@
 const db = require('../helpers/database');
+const bcrypt = require('bcrypt');
 
 //getbyid, getall, createuser, updateuser, deleteuser
 
@@ -7,6 +8,12 @@ exports.getById = async function getById(id) {
     const values = [id];
     const data = await db.run_query(query, values);
     return data;
+}
+
+exports.findByUsername = async function findByUsername(username) {
+    const query = "SELECT * FROM users WHERE username = ?;";
+    const user = await db.run_query(query, username);
+    return user;
 }
 
 exports.getAll = async function getAll() {
@@ -119,5 +126,25 @@ exports.removeUserRole = async function removeUserRole(user_id, role_id) {
     const query = "DELETE FROM users_roles WHERE user_ID = ? AND role_ID = ?;";
     const values = [user_id, role_id];
     const data = await db.run_query(query, values);
+    return data;
+}
+
+//LOGIN & REGISTER
+
+exports.login = async function login(username) {
+    // return any details needed by the client
+    const {ID, username, email, avatarURL} = ctx.state.user
+    const links = {
+    self: `${ctx.protocol}://${ctx.host}${prefix}/${ID}`
+    }
+    ctx.body = {ID, username, email, avatarURL, links};
+}
+
+exports.createUser = async function createUser(user) {
+    const query = "INSERT INTO users SET ?";
+    const password = user.password;
+    const hash = bcrypt.hashSync(password, 10);
+    user.password = hash;
+    const data = await db.run_query(query, user);
     return data;
 }

@@ -1,5 +1,11 @@
 const Koa = require('koa');
 const app = new Koa();
+const passport = require('koa-passport');
+
+//???
+app.use(passport.initialize());
+app.use(passport.session());
+//???
 
 const users = require('./routes/users.js');
 const shelters = require('./routes/shelters.js')

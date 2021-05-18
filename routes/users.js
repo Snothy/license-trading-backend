@@ -1,14 +1,18 @@
 const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
 const model = require('../models/users');
+const auth = require('../controllers/auth');
+const issueJwt = require('../strategies/issueJwt');
+
+
 
 const router = Router({prefix : '/api/users'});
 
 //ONLY TESTED GETALL, GETBYID, POST
 //user routes
-router.get('/', getAll);
+router.get('/', auth,  getAll);
 router.post('/', bodyparser(), addUser);
-//login
+
 router.get('/:id([0-9]{1,})', getById);
 router.put('/:id([0-9]{1,})', bodyparser(), updateUser);
 router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
@@ -24,10 +28,16 @@ router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites); //add ne
 router.get('/:id([0-9]{1,})/shelters', getUserShelters);                    //admin only   
 router.post('/:id([0-9]{1,})/shelters', bodyparser(), assignUserShelter);   //admin only
 router.del('/:id([0-9]{1,})/shelters', bodyparser(), removeUserShelter);    //admin only
+
 //roles ADMIN ONLY
 router.get('/:id([0-9]{1,})/roles', getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
 router.post('/:id([0-9]{1,})/roles', bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
 router.del('/:id([0-9]{1,})/roles', bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
+
+//login&register
+//remove prefix somehow | new router, new file or remove the prefix
+router.post('/login', bodyparser(), login);
+router.post('/register', bodyparser(), createUser);
 
 //shelters ADMIN ONLY 
 //make sheltyer go assign
@@ -35,6 +45,7 @@ router.del('/:id([0-9]{1,})/roles', bodyparser(), removeUserRole);  //remove ent
 
 async function getAll(ctx) {
     const result = await model.getAll();
+    //console.log("c");
     if (result.length) {
         ctx.body = result;
     }
@@ -175,4 +186,27 @@ async function removeUserRole(ctx) {
     }
 }
 
+//LOGIN & REGISTER
+async function login(ctx) {
+    return null;
+}
+
+async function createUser(ctx) {
+    //console.log('a');
+    const data = ctx.request.body;
+    //console.log(data);
+    const result = await model.createUser(data);
+    if (result.affectedRows) {
+        const id = result.insertId;
+        ctx.status = 201;
+        const userData = await model.findByUsername(data.username);
+        const jwt = await issueJwt.issueJwt(userData); //assigning the user a JWT
+        //the front end takes the assigned token and stores it somewhere for use for future transactions
+
+        ctx.body = {ID : id, created : true, token : jwt.token, expiresIn : jwt.expires};
+    }
+}
+
+
 module.exports = router;
+
