@@ -131,13 +131,16 @@ exports.removeUserRole = async function removeUserRole(user_id, role_id) {
 
 //LOGIN & REGISTER
 
-exports.login = async function login(username) {
-    // return any details needed by the client
-    const {ID, username, email, avatarURL} = ctx.state.user
-    const links = {
-    self: `${ctx.protocol}://${ctx.host}${prefix}/${ID}`
-    }
-    ctx.body = {ID, username, email, avatarURL, links};
+//Password check
+//password check should only be done in the login route, as then a token is assigned to the user....obviously
+exports.verifyPass = async function verifyPass(user,password) {
+    const isMatch = bcrypt.compareSync(password, user.password);
+    //console.log(isMatch);
+    return isMatch;
+}
+
+exports.login = async function login() {
+    return null;
 }
 
 exports.createUser = async function createUser(user) {

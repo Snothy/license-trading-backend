@@ -37,6 +37,7 @@ router.del('/:id([0-9]{1,})/roles', bodyparser(), removeUserRole);  //remove ent
 //login&register
 //remove prefix somehow | new router, new file or remove the prefix
 router.post('/login', bodyparser(), login);
+//router.???('/'logout'), logout);
 router.post('/register', bodyparser(), createUser);
 
 //shelters ADMIN ONLY 
@@ -188,20 +189,51 @@ async function removeUserRole(ctx) {
 
 //LOGIN & REGISTER
 async function login(ctx) {
-    return null;
+    const data = ctx.request.body;
+    //console.log(data);
+    try {
+        //console.log('a');
+        const user = await model.findByUsername(data.username);
+
+        if (user.length) {
+            //VALID USERNAME
+            //console.log('b');
+            const isValid = await model.verifyPass(user[0], data.password);
+
+            if (isValid) {
+                //VALID PASSWORD, ISSUE TOKEN
+                //console.log('c');
+                const token = issueJwt.issueJwt(user);
+                ctx.status = 200;
+                return ctx.body = {login : true, token : token.token, expiresIn : token.expiresIn};
+
+            } else {
+                //INVALID PASSWORD | redirect to same page
+                ctx.status = 401;
+                return ctx.body = {login : false, msg : "Invalid username or password."} //don't let the user know which was incorrect
+            }
+        } else {
+            //INVALID USERNAME / NO DATA WAS INPUT | redirect to same page
+            ctx.status = 401;
+            return ctx.body = {login : false, msg : "Invalid username or password"};
+        }
+    } catch(err) {
+        console.log(err);
+        //do something?
+    }
 }
 
 async function createUser(ctx) {
     //console.log('a');
     const data = ctx.request.body;
-    const password = ctx.request.body.password
+    //const password = ctx.request.body.password
     //console.log(data);
     const result = await model.createUser(data);
     if (result.affectedRows) {
         const id = result.insertId;
         ctx.status = 201;
         const userData = await model.findByUsername(data.username);
-        userData[0].password = password;
+        //userData[0].password = password;
         //console.log(userData);
         const jwt = await issueJwt.issueJwt(userData); //assigning the user a JWT
         //the front end takes the assigned token and stores it somewhere for use for future transactions

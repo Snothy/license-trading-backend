@@ -10,7 +10,6 @@ const keyPrivate = fs.readFileSync(keyPath, 'utf8');            //spec encoding
 const verifyKeyPath = path.join(__dirname, '..', 'public-key.pem');
 const keyPub = fs.readFileSync(verifyKeyPath, 'utf8'); 
 
-
 function issueJwt(user) {
     //console.log(user);
     const username = user[0].username;
@@ -19,7 +18,7 @@ function issueJwt(user) {
 
     //payload passed into the verification strategy function 
     const payload = {};
-    payload.sub = {username: username, password : user[0].password};
+    payload.sub = username; //{username: username, password : user[0].password};
     payload.iat = Date.now();
     //console.log('a');
     //console.log(payload);
@@ -43,6 +42,8 @@ function issueJwt(user) {
 }
 
 module.exports.issueJwt = issueJwt;
+
+//console.log(module.exports);
 
 //token: "Bearer " + signedToken,
 

@@ -5,12 +5,7 @@ const bcrypt = require('bcrypt');
 
 const passport = require('koa-passport');
 
-//Password check
-function verifyPass(user,password) {
-    const isMatch = bcrypt.compareSync(password, user.password);
-    //console.log(isMatch);
-    return isMatch;
-}
+
 
 //GET PATH TO PUBLIC KEY
 const fs = require('fs');
@@ -46,17 +41,15 @@ const strategy = new JwtStrategy(opts, async function(jwt_payload, done) {
     try {
         //console.log(jwt_payload.sub);
         //console.log(jwt_payload.sub.password);
-        let userData = await users.findByUsername(jwt_payload.sub.username);
+        let userData = await users.findByUsername(jwt_payload.sub);
         //console.log('b');
         //userData = userData[0];
         //console.log(userData);
         //console.log(userData.length);
         if (userData.length) {
             //if the user if correctly verified, return null for error and return the user object
-            if(verifyPass(userData[0], jwt_payload.sub.password)) {
-                console.log("User is valid and has correct password");
-                return done(null, userData);
-            }
+            console.log("User is valid and has correct password");
+            return done(null, userData[0]);
         } else {
             //user wasn't verified, could perform some action like refer to sign up
             console.log("No user with this username found");
