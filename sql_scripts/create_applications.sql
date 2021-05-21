@@ -1,0 +1,11 @@
+CREATE TABLE applications  (ID INT NOT NULL AUTO_INCREMENT,
+			user_ID INT,
+		    company_name VARCHAR(24) NOT NULL,
+		    address VARCHAR(128) NOT NULL,
+		    postcode VARCHAR(16) NOT NULL,
+		    telephone_number INT,
+			insurance_company VARCHAR (32),
+			status INT,
+		    currentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		    PRIMARY KEY (ID),
+		    FOREIGN KEY (user_ID) REFERENCES users (ID));

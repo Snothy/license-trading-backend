@@ -9,7 +9,7 @@ const model = require('../models/chat');
 
 //if initialize chat is pressed, perform a check to see if those users already have a chat before attempting to create a 'new' chat between them
 
-const router = Router({prefix : '/api/chat'});
+const router = Router({prefix : '/api/chats'});
 
 router.get('/', getAllChats);                                   //perform role check and list all instances of chats the user belongs to
 router.post('/', bodyparser(), createChat);                     //create new chat between user and shelter (done at shelter/:id uri to get the shelters id)
@@ -24,7 +24,7 @@ async function getAllChats(ctx) {
     //get user_id from login context ->
     //hardcoded for testing
     //1 is admin, 5 is user
-    const user_id = 5      //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
+    const user_id = 1      //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
     //hardcoded for testing 
 
     const result = await model.getAllChats(user_id);
@@ -39,7 +39,7 @@ async function createChat(ctx) {
     //need to get shelter/:id from ctx.params?
 
     //hardcoded for testing
-    const chat = {user_ID : 5, shelter_ID : 2};
+    const chat = {user_ID : 5};
     //hardcoded for testing
 
     const result = await model.createChat(chat);

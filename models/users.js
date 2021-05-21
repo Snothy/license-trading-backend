@@ -22,12 +22,15 @@ exports.getAll = async function getAll() {
     return data;
 }
 
+/*
+//Replaced by createUser
 exports.addUser = async function addUser(user) {
     const query = "INSERT INTO users SET ?;";
     const data = await db.run_query(query, user);
     console.log(data);
     return data;
 }
+*/
 
 exports.updateUser = async function updateUser(user) {
     const query = "UPDATE users SET ? WHERE ID = ?;";
@@ -43,55 +46,6 @@ exports.removeUser = async function removeUser(id) {
     return data;
 }
 
-
-//FAVOURITES
-exports.getFavourites = async function getFavourites(id) {
-    const query = "SELECT * FROM favourites WHERE user_ID = ?;";
-    const values = [id];
-    const data = await db.run_query(query,values);
-    //join statement
-    return data;
-}
-
-exports.setFavourites = async function setFavourites(id) {
-    //when viewing a dog a user can add to favourites
-    //might want to move this to the dogs route for dogs/:id
-    //this requires a logged in users user_ID
-    return null;
-}
-
-//SHELTERS
-exports.getUserShelters = async function getUserShelters(user_id) {
-    //const query = "SELECT * FROM users_shelters WHERE user_ID = ?;";
-    const query = "SELECT shelters.* FROM shelters JOIN users_shelters ON (shelters.ID = users_shelters.shelter_ID) WHERE users_shelters.user_ID = ?;";
-    values = [user_id];
-    const data = await db.run_query(query, values);
-    return data;
-}
-
-exports.assignUserShelter = async function assignUserShelter(user_id, shelter_id) {
-    //CANT ASSIGN SHELTER TO NON-STAFF MEMBERS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    const query = "INSERT INTO users_shelters (user_ID,shelter_ID) VALUES (?, ?);";
-    const values = [user_id, shelter_id];
-    //console.log(values);
-    const data = await db.run_query(query, values);
-    return data;
-}
-
-exports.hasShelter = async function hasShelter(user_id, shelter_id){
-    const query = "SELECT * FROM users_shelters WHERE user_ID = ? AND shelter_ID = ?;";
-    const values = [user_id, shelter_id];
-    const data = await db.run_query(query, values);
-    return data.length>0;
-}
-
-exports.removeUserShelter = async function removeUserShelter(user_id, shelter_id) {
-    const query = "DELETE FROM users_shelters WHERE user_ID = ? AND shelter_ID = ?;";
-    const values = [user_id, shelter_id];
-    const data = await db.run_query(query, values);
-    return data;
-}
 
 //ROLES
 

@@ -11,23 +11,15 @@ const router = Router({prefix : '/api/users'});
 //ONLY TESTED GETALL, GETBYID, POST
 //user routes
 router.get('/', auth,  getAll);
-router.post('/', bodyparser(), addUser);
+//router.post('/', bodyparser(), addUser);
 
 router.get('/:id([0-9]{1,})', getById);
 router.put('/:id([0-9]{1,})', bodyparser(), updateUser);
 router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
 
-//favourites
-router.get('/:id([0-9]{1,})/favourites', getFavourites); //List all favourite dogs 
-router.post('/:id([0-9]{1,})/favourites', bodyparser(), setFavourites); //add new dog (should be done from api/dogs or api/dogs/:id [button to add to fav])
-
 //???crud for roles??? here or separate route? (do i even make crud for roles?)
 //implement error handling for all routes
 
-//shelters
-router.get('/:id([0-9]{1,})/shelters', getUserShelters);                    //admin only   
-router.post('/:id([0-9]{1,})/shelters', bodyparser(), assignUserShelter);   //admin only
-router.del('/:id([0-9]{1,})/shelters', bodyparser(), removeUserShelter);    //admin only
 
 //roles ADMIN ONLY
 router.get('/:id([0-9]{1,})/roles', getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
@@ -61,6 +53,8 @@ async function getById(ctx) {
     }
 }
 
+/*
+//replaced by createUser
 async function addUser(ctx) {
     const user = ctx.request.body;
     const result = await model.addUser(user);
@@ -71,6 +65,7 @@ async function addUser(ctx) {
         ctx.body = {ID: id, created : true, link : `${ctx.request.path}/${id}`};
     }
 }
+*/
 
 async function updateUser(ctx) {
     const id = ctx.params.id;
@@ -96,57 +91,7 @@ async function removeUser(ctx) {
     }
 }
 
-//FAVOURITES
-async function getFavourites(ctx) {
-    const {id} = ctx.params;
-    const result = await model.getFavourites(id);
-    if (result.length) {
-        ctx.body = {favourites : result};
-    }
-}
 
-async function setFavourites(ctx) {
-    return null;
-}
-
-//SHELTERS | admin only
-async function getUserShelters(ctx) {
-    const {id} = ctx.params;
-    const result = await model.getUserShelters(id);
-    if (result.length) {
-        ctx.body = {shelters : result};
-    }
-}
-
-async function assignUserShelter(ctx) {
-    const {id:user_id} = ctx.params;
-    const {shelter_id} = ctx.request.body;
-    const hasShelter = await model.hasShelter(user_id, shelter_id);
-    if(hasShelter) {
-        ctx.status = 409; //conflict 
-        return ctx.body = {assigned : false};
-    }
-    const result = await model.assignUserShelter(user_id, shelter_id);
-    if(result.affectedRows) {
-        ctx.status = 201;
-        ctx.body = {assigned : true};
-    }
-}
-
-async function removeUserShelter(ctx) {
-    const {id:user_id} = ctx.params;
-    const {shelter_id} = ctx.request.body;
-    const hasShelter = await model.hasShelter(user_id, shelter_id);
-    if(!hasShelter) {
-        ctx.status = 409; //conflict 
-        return ctx.body = {removed : false};
-    }
-    const result = await model.removeUserShelter(user_id, shelter_id);
-    if(result.affectedRows) {
-        ctx.status = 201;
-        ctx.body = {removed : true};
-    }
-}
 //ROLES
 async function getUserRoles(ctx) {
     const {id} = ctx.params;
@@ -205,7 +150,7 @@ async function login(ctx) {
                 //console.log('c');
                 const token = issueJwt.issueJwt(user);
                 ctx.status = 200;
-                return ctx.body = {login : true, token : token.token, expiresIn : token.expiresIn};
+                return ctx.body = {login : true, token : token.token, expiresIn : token.expires};
 
             } else {
                 //INVALID PASSWORD | redirect to same page

@@ -8,16 +8,14 @@ app.use(passport.session());
 //???
 
 const users = require('./routes/users.js');
-const shelters = require('./routes/shelters.js')
-const dogs = require('./routes/dogs.js');
+const applications = require('./routes/applications.js');
 const roles = require('./routes/roles.js');
-const chat = require('./routes/chat.js');
+const chats = require('./routes/chats.js');
 
 app.use(users.routes());
-app.use(shelters.routes());
-app.use(dogs.routes());
+app.use(applications.routes());
 app.use(roles.routes());
-app.use(chat.routes());
+app.use(chats.routes());
 
 let port = process.env.PORT || 3000;
 
