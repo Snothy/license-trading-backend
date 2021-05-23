@@ -3,6 +3,7 @@ const bodyparser = require('koa-bodyparser');
 const model = require('../models/users');
 const auth = require('../controllers/auth');
 const issueJwt = require('../strategies/issueJwt');
+const can = require('../permissions/users');
 
 
 
@@ -13,9 +14,9 @@ const router = Router({prefix : '/api/users'});
 router.get('/', auth,  getAll);
 //router.post('/', bodyparser(), addUser);
 
-router.get('/:id([0-9]{1,})', getById);
-router.put('/:id([0-9]{1,})', bodyparser(), updateUser);
-router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
+router.get('/:id([0-9]{1,})', auth, getById);
+router.put('/:id([0-9]{1,})', auth, bodyparser(), updateUser);
+router.del('/:id([0-9]{1,})', auth, bodyparser(), removeUser);
 
 //???crud for roles??? here or separate route? (do i even make crud for roles?)
 //implement error handling for all routes
@@ -23,7 +24,7 @@ router.del('/:id([0-9]{1,})', bodyparser(), removeUser);
 
 //roles ADMIN ONLY
 router.get('/:id([0-9]{1,})/roles', getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
-router.post('/:id([0-9]{1,})/roles', bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
+router.post('/:id([0-9]{1,})/roles',  bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
 router.del('/:id([0-9]{1,})/roles', bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
 
 //login&register
@@ -37,19 +38,39 @@ router.post('/register', bodyparser(), createUser);
 //make shelter go remove
 
 async function getAll(ctx) {
-    const result = await model.getAll();
-    //console.log("c");
-    if (result.length) {
-        ctx.body = result;
+    //console.log(ctx.session.id);
+    //console.log(ctx.state.id);
+    //console.log(ctx.state.user);
+
+    const permission = can.readAll(ctx.state.user);
+    //console.log(ctx.state.user);
+    if(!permission.granted) {
+        ctx.status = 403;
+    } else {
+        const result = await model.getAll();
+        //console.log("c");
+        if (result.length) {
+            ctx.body = result;
+        }
     }
 }
 
 async function getById(ctx) {
     const id = ctx.params.id;
+    //console.log(ctx.state.user);
     const result = await model.getById(id);
+    //console.log(result[0]);
     if (result.length) {
         const user = result[0];
-        ctx.body = user;
+
+        const permission = can.read(ctx.state.user, user);
+        //console.log(permission);
+        //console.log(permission.granted);
+        if (!permission.granted) {
+            ctx.status = 403;
+        } else {
+            ctx.body = permission.filter(user);
+        }
     }
 }
 
@@ -73,21 +94,35 @@ async function updateUser(ctx) {
     let result = await model.getById(id);
     if (result.length) {
         let user = result[0];
-        const {ID, dateRegistered, ...body} = ctx.request.body;
-        Object.assign(user,body);
-        result = await model.updateUser(user);
-        if (result.affectedRows) {
-            ctx.body = {ID : id, updated: true};
+
+        const permission = can.update(ctx.state.user, user);
+        if (!permission.granted) {
+            ctx.status = 403;
+        } else {
+            const {ID, dateRegistered, ...body} = ctx.request.body;
+            Object.assign(user,body);
+            delete user.role;
+            //console.log(user);
+            result = await model.updateUser(user);
+            if (result.affectedRows) {
+                ctx.body = {ID : id, updated: true};
+            }
         }
     }
 }
 
 async function removeUser(ctx) {
     const id = ctx.params.id;
-    let result = await model.removeUser(id);
-    if (result.affectedRows) {
-        ctx.status = 200;
-        ctx.body = {ID : id, deleted : true};
+    //console.log(id);
+    const permission = can.delete(ctx.state.user, parseInt(id));
+    if(!permission.granted) {
+        ctx.status = 403;
+    } else {
+        let result = await model.removeUser(id);
+        if (result.affectedRows) {
+            ctx.status = 200;
+            ctx.body = {ID : id, deleted : true};
+        }
     }
 }
 
@@ -95,7 +130,7 @@ async function removeUser(ctx) {
 //ROLES
 async function getUserRoles(ctx) {
     const {id} = ctx.params;
-    console.log(id);
+    //console.log(id);
     const result = await model.getUserRoles(id);
     if (result.length) {
         ctx.body = {roles : result};
@@ -179,7 +214,7 @@ async function createUser(ctx) {
         ctx.status = 201;
         const userData = await model.findByUsername(data.username);
         //userData[0].password = password;
-        //console.log(userData);
+        //console.log(userData); 
         const jwt = await issueJwt.issueJwt(userData); //assigning the user a JWT
         //the front end takes the assigned token and stores it somewhere for use for future transactions
 

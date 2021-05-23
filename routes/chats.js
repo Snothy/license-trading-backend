@@ -1,6 +1,8 @@
 const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
 const model = require('../models/chat');
+const auth = require('../controllers/auth');
+const can = require('../permissions/chats');
 
 //CHATS tab
 //user contacts a shelter where the dog is, the staff that is currently available at work (on their account) have access to that chat (staff users see all chats
@@ -11,37 +13,47 @@ const model = require('../models/chat');
 
 const router = Router({prefix : '/api/chats'});
 
-router.get('/', getAllChats);                                   //perform role check and list all instances of chats the user belongs to
-router.post('/', bodyparser(), createChat);                     //create new chat between user and shelter (done at shelter/:id uri to get the shelters id)
+router.get('/', auth , getAllChats);                                   //perform role check and list all instances of chats the user belongs to
+router.post('/', auth, bodyparser(), createChat);                     //create new chat between user and shelter (done at shelter/:id uri to get the shelters id)
 //create delete chat feature that deletes the chat after X amount of time of inactivity
 
-router.get('/:id([0-9]{1,})', getById);                         //using the chat_ID we find & list all chat messages that belong to that chat
-router.post('/:id([0-9]{1,})', bodyparser(), createMessage);    //add chat message to chat_ID from user_ID
-router.del('/:id([0-9]{1,})', bodyparser(), removeMessage);     //staff can remove messages | requires the chat_message_ID, not the chat_ID
+router.get('/:id([0-9]{1,})', auth, getById);                         //using the chat_ID we find & list all chat messages that belong to that chat
+router.post('/:id([0-9]{1,})', auth, bodyparser(), createMessage);    //add chat message to chat_ID from user_ID
+router.del('/:id([0-9]{1,})', auth, bodyparser(), removeMessage);     //staff can remove messages | requires the chat_message_ID, not the chat_ID
+
+router.get('/pending', auth, getPending);                             //Get all unanswered chat requests
+router.put('/pending', auth, aaaaaa);                                 //Set staff_ID in chats table to staff member to picked up the chat request 
 
 
 async function getAllChats(ctx) {
-    //get user_id from login context ->
-    //hardcoded for testing
-    //1 is admin, 5 is user
-    const user_id = 1      //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
-    //hardcoded for testing 
+    const user = ctx.state.user;     //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
+ 
+    const permission = can.readAll(user);
+    //using this as a role check in this case
+    //FIX FIRSTNAME AND LASTNAME IN THE JOIN QUERY
+    //SHOULD SHOW THE OPPOSING(if user-> staff name), NOT JUST USER
 
-    const result = await model.getAllChats(user_id);
-    if (result.length) {
-        ctx.body = result;
+    //if user
+    if(!permission.granted) {
+        const result = await model.getAllUser(user.ID);
+        //console.log('a');
+        if (result.length) {
+            return ctx.body = result;
+        }
+
+    //if admin
+    } else {
+        const result = await model.getAllStaff(user.ID);
+        //console.log('b');
+        if (result.length) {
+            return ctx.body = result;
+        }
     }
+
 }
 
 async function createChat(ctx) {
-    //maybe at /shelters/:id level
-    //need to get user_id from logged in user
-    //need to get shelter/:id from ctx.params?
-
-    //hardcoded for testing
-    const chat = {user_ID : 5};
-    //hardcoded for testing
-
+    const chat = {user_ID : ctx.state.user.ID};
     const result = await model.createChat(chat);
 
     //HANDLE EXCEPTION IF CHAT ALREADY EXISTS
@@ -49,7 +61,7 @@ async function createChat(ctx) {
     if (result.affectedRows) {
         const id = result.ID;
         ctx.status = 201;
-        ctx.body = {ID: id, created : true, link : `${ctx.request.path}/${id}`};
+        ctx.body = {ID: id, created : true};
     }
 }
 
@@ -65,7 +77,7 @@ async function getById(ctx) {
 async function createMessage(ctx) {
     //get user_id from logged in context
     //hardcorded for testing
-    const user_id = 1;
+    const user_id = ctx.state.user.ID;
     //hardcoded for testing 
 
     const chat_id = ctx.params.id;
@@ -89,5 +101,12 @@ async function removeMessage(ctx) {
     }
 }
 
+async function getPending() {
+    return null;
+}
+
+async function aaaaaa() {
+    return null;
+}
 
 module.exports = router;

@@ -4,15 +4,24 @@ const bcrypt = require('bcrypt');
 //getbyid, getall, createuser, updateuser, deleteuser
 
 exports.getById = async function getById(id) {
-    const query = "SELECT * FROM users WHERE ID = ?;";
+    //const query = "SELECT * FROM users WHERE ID = ?;";
+    query = "SELECT roles.name AS role, users.* FROM users JOIN users_roles ON (users.ID = users_roles.user_ID) JOIN roles ON (roles.ID = users_roles.role_ID) WHERE users_roles.user_ID = ?;";
     const values = [id];
     const data = await db.run_query(query, values);
     return data;
 }
 
 exports.findByUsername = async function findByUsername(username) {
-    const query = "SELECT * FROM users WHERE username = ?;";
-    const user = await db.run_query(query, username);
+    let query = "SELECT * FROM users WHERE username = ?;";
+    //JOIN STATEMENT to put the role into the user object in ctx.state.user
+    //const query = "SELECT roles.name AS role, users.* FROM users JOIN users_roles ON (users.ID = users_roles.user_ID) JOIN roles ON (roles.ID = users_roles.role_ID) WHERE users.username = ?;";
+    let user = await db.run_query(query, username);
+
+    //JOIN STATEMENT to put the role into the user object in ctx.state.user | helps with role validation
+    //ISSUE IF USER HAS MULTIPLE ROLES -> only selects uppermost
+    query = "SELECT roles.name AS role, users.* FROM users JOIN users_roles ON (users.ID = users_roles.user_ID) JOIN roles ON (roles.ID = users_roles.role_ID) WHERE users_roles.user_ID = ?;";
+    user = await db.run_query(query, user[0].ID);
+    //console.log(user);
     return user;
 }
 
@@ -40,8 +49,14 @@ exports.updateUser = async function updateUser(user) {
 }
 
 exports.removeUser = async function removeUser(id) {
-    const query = "DELETE FROM users WHERE ID = ?;";
     const values = [id];
+
+    //remove foreign key dependencies
+    let query = "DELETE FROM users_roles WHERE user_ID = ?";
+    await db.run_query(query, values);
+
+    //remove user 
+    query = "DELETE FROM users WHERE ID = ?;";
     const data = await db.run_query(query, values);
     return data;
 }
@@ -98,10 +113,17 @@ exports.login = async function login() {
 }
 
 exports.createUser = async function createUser(user) {
-    const query = "INSERT INTO users SET ?";
+    let query = "INSERT INTO users SET ?";
     const password = user.password;
     const hash = bcrypt.hashSync(password, 10);
     user.password = hash;
+    //CREATE USER
     const data = await db.run_query(query, user);
+    //ASSIGN USER DEFAULT USER ROLE
+    query = "INSERT INTO users_roles SET ?;";
+    //console.log(data);
+    const values = {user_ID : data.insertId, role_ID : 3};
+    const roles = await db.run_query(query, values);
+    //console.log(roles);
     return data;
 }

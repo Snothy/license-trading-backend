@@ -41,14 +41,15 @@ const strategy = new JwtStrategy(opts, async function(jwt_payload, done) {
     try {
         //console.log(jwt_payload.sub);
         //console.log(jwt_payload.sub.password);
-        let userData = await users.findByUsername(jwt_payload.sub);
+        //console.log(jwt_payload.sub);
+        let userData = await users.getById(jwt_payload.sub);
         //console.log('b');
         //userData = userData[0];
         //console.log(userData);
         //console.log(userData.length);
         if (userData.length) {
             //if the user if correctly verified, return null for error and return the user object
-            console.log("User is valid and has correct password");
+            //console.log("User is valid and has correct password");
             return done(null, userData[0]);
         } else {
             //user wasn't verified, could perform some action like refer to sign up

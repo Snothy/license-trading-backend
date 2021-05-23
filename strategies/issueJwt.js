@@ -12,13 +12,13 @@ const keyPub = fs.readFileSync(verifyKeyPath, 'utf8');
 
 function issueJwt(user) {
     //console.log(user);
-    const username = user[0].username;
+    const id = user[0].ID;
     //console.log(username);
     const expiresIn = '2w';
 
     //payload passed into the verification strategy function 
     const payload = {};
-    payload.sub = username; //{username: username, password : user[0].password};
+    payload.sub = id; //{username: username, password : user[0].password};
     payload.iat = Date.now();
     //console.log('a');
     //console.log(payload);
