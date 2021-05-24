@@ -22,7 +22,7 @@ router.post('/:id([0-9]{1,})', auth, bodyparser(), createMessage);    //add chat
 router.del('/:id([0-9]{1,})', auth, bodyparser(), removeMessage);     //staff can remove messages | requires the chat_message_ID, not the chat_ID
 
 router.get('/pending', auth, getPending);                             //Get all unanswered chat requests
-router.put('/pending', auth, aaaaaa);                                 //Set staff_ID in chats table to staff member to picked up the chat request 
+router.put('/pending', auth, bodyparser(), changeStatus);                                 //Set staff_ID in chats table to staff member to picked up the chat request 
 
 
 async function getAllChats(ctx) {
@@ -50,10 +50,11 @@ async function getAllChats(ctx) {
         }
     }
 
+
 }
 
 async function createChat(ctx) {
-    const chat = {user_ID : ctx.state.user.ID};
+    const chat = {user_ID : ctx.state.user.ID, staff_ID : null};
     const result = await model.createChat(chat);
 
     //HANDLE EXCEPTION IF CHAT ALREADY EXISTS
@@ -67,29 +68,36 @@ async function createChat(ctx) {
 
 async function getById(ctx) {
     const chat_id = ctx.params.id;
+    const chat = await model.getChatById(chat_id);
+
+    //Permission Check
+    //user can access if user_id matches, staff can access if staff_id matches
+    //administrators have access to all chats
+    const permission = can.read(ctx.state.user, chat[0]);
+    if (!permission.granted) {
+        return ctx.status = 403;
+    }
+
     const result = await model.getById(chat_id);
+    //console.log(result);
     if (result.length) {
         const chat_messages = result;
-        ctx.body = chat_messages;
+        return ctx.body = chat_messages;
     }
 }
 
 async function createMessage(ctx) {
-    //get user_id from logged in context
-    //hardcorded for testing
+    //does not require role check
     const user_id = ctx.state.user.ID;
-    //hardcoded for testing 
 
     const chat_id = ctx.params.id;
     const message_content = Object.values(ctx.request.body); //message is an object {message_content : "message"}
-    //console.log(message_content)
-
 
     const message = {chat_ID : chat_id, user_ID : user_id, message_content};
     const result = await model.createMessage(message);
-    if(result.affectedRows) {
+    if (result.affectedRows) {
         ctx.status = 201;
-        ctx.body = {created : true};
+        return ctx.body = {created : true};
     }
 }
 
@@ -97,16 +105,31 @@ async function removeMessage(ctx) {
     const message_id = ctx.request.body; //not sure if its request.body for HTTP DELETE
     const result = await model.removeMessage(message_id);
     if(result.affectedRows) {
-        ctx.body = {removed : true};
+        return ctx.body = {removed : true};
     }
 }
 
-async function getPending() {
-    return null;
+async function getPending(ctx) {
+    const permission = can.readPending(ctx.state.user);
+    if (!permission.granted) {
+        return ctx.status = 403;
+    }
+    result = await model.getPending();
+    return ctx.body = result;
 }
 
-async function aaaaaa() {
-    return null;
+async function changeStatus(ctx) {
+    const permission = can.updatePending(ctx.state.user);
+    console.log(permission);
+    if (!permission.granted) {
+        return ctx.status = 403;
+    }
+
+    chat_ID = ctx.request.body;
+    result = await model.changeStatus(chat_ID.chat_ID, ctx.state.user.ID);
+    if (result.affectedRows) {
+        return ctx.body = {success : true};
+    }
 }
 
 module.exports = router;

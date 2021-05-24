@@ -5,31 +5,51 @@ const ac = new AccessControl();
 
 ac
   .grant('user')
-  .condition({Fn:'EQUALS', args: {'requester':'$.owner'}})
-  .execute('read')
-  .on('chat');
+    .condition({Fn:'EQUALS', args: {'requester':'$.chatUser_ID'}})
+    .execute('read')
+    .on('chat');
 
 
 ac
-  .grant('administator')
-  .execute('read')
-  .on('chats');
+  .grant('staff')
+    .condition({Fn:'EQUALS', args: {'requester':'$.chatStaff_ID'}})
+    .execute('read')
+    .on('chat')
+
 
 ac
-  .grant('administator')
-  .execute('read')
-  .on('chat');
+  .grant('administrator')
+    .execute('read')
+    .on('chat');
 
 ac
-  .grant('administator')
-  .execute('update')
-  .on('chat');
+  .grant('staff')
+    .execute('read')
+    .on('chats')
+  .grant('administrator')
+    .extend('staff');
 
 ac
-  .grant('administator')
-  .condition({Fn:'NOT_EQUALS', args: {'requester':'$.owner'}})
-  .execute('delete')
-  .on('chat');
+  .grant('staff')
+    .execute('read')
+    .on('chatsPending')
+  .grant('administrator')
+    .extend('staff');
+  
+
+ac
+  .grant('staff')
+    .execute('update')
+    .on('chatsPending')
+  .grant('administrator')
+    .extend('staff');
+
+ac
+  .grant('staff')
+    .execute('delete')
+    .on('chat')
+  .grant('administrator')
+    .extend('staff');
 
 
 
@@ -45,25 +65,31 @@ ac
   exports.read = (requester, data) => {
     return ac
       .can(requester.role)
-      .context({requester:requester.ID, owner:data.ID})
+      .context({requester:requester.ID, chatUser_ID:data.user_ID, chatStaff_ID:data.staff_ID})
       .execute('read')
       .sync()
       .on('chat');
   }
-  
-  exports.update = (requester, data) => {
+
+  exports.readPending = (requester) => {
     return ac
       .can(requester.role)
-      .context({requester:requester.ID, owner:data.ID})
-      .execute('update')
+      .execute('read')
       .sync()
-      .on('chat');
+      .on('chatsPending');
   }
   
-  exports.delete = (requester, data) => {
+  exports.updatePending = (requester) => {
     return ac
       .can(requester.role)
-      .context({requester:requester.ID, owner:data.ID})
+      .execute('update')
+      .sync()
+      .on('chatsPending');
+  }
+  
+  exports.delete = (requester) => {
+    return ac
+      .can(requester.role)
       .execute('delete')
       .sync()
       .on('chat');

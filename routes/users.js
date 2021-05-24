@@ -4,6 +4,7 @@ const model = require('../models/users');
 const auth = require('../controllers/auth');
 const issueJwt = require('../strategies/issueJwt');
 const can = require('../permissions/users');
+const bcrypt = require('bcrypt');
 
 
 
@@ -23,9 +24,9 @@ router.del('/:id([0-9]{1,})', auth, bodyparser(), removeUser);
 
 
 //roles ADMIN ONLY
-router.get('/:id([0-9]{1,})/roles', getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
-router.post('/:id([0-9]{1,})/roles',  bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
-router.del('/:id([0-9]{1,})/roles', bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
+router.get('/:id([0-9]{1,})/roles', auth, getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
+router.post('/:id([0-9]{1,})/roles', auth, bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
+router.del('/:id([0-9]{1,})/roles', auth, bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
 
 //login&register
 //remove prefix somehow | new router, new file or remove the prefix
@@ -50,7 +51,7 @@ async function getAll(ctx) {
         const result = await model.getAll();
         //console.log("c");
         if (result.length) {
-            ctx.body = result;
+            return ctx.body = result;
         }
     }
 }
@@ -67,9 +68,9 @@ async function getById(ctx) {
         //console.log(permission);
         //console.log(permission.granted);
         if (!permission.granted) {
-            ctx.status = 403;
+            return ctx.status = 403;
         } else {
-            ctx.body = permission.filter(user);
+            return ctx.body = permission.filter(user);
         }
     }
 }
@@ -89,6 +90,12 @@ async function addUser(ctx) {
 */
 
 async function updateUser(ctx) {
+
+    //HANDLE EXCEPTION FOR PASSWORD CHANGE
+    //BCRYPT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //check for password change ?(if obj.password)??
+
+
     const id = ctx.params.id;
     //Checking if user exists
     let result = await model.getById(id);
@@ -97,11 +104,23 @@ async function updateUser(ctx) {
 
         const permission = can.update(ctx.state.user, user);
         if (!permission.granted) {
-            ctx.status = 403;
+            return ctx.status = 403;
         } else {
             const {ID, dateRegistered, ...body} = ctx.request.body;
             Object.assign(user,body);
             delete user.role;
+            //console.log(user);
+
+
+            console.log(ctx.request.body);
+            const newPass = typeof ctx.request.body.password != "undefined";
+            console.log(newPass);
+            if (newPass) {
+                //user.password is not defined
+                //console.log(user);
+                user.password = bcrypt.hashSync(user.password, 10);
+                //console.log(user.password);
+            }
             //console.log(user);
             result = await model.updateUser(user);
             if (result.affectedRows) {
@@ -112,11 +131,12 @@ async function updateUser(ctx) {
 }
 
 async function removeUser(ctx) {
+    //following GDPR regulations, the user has permission to delete his data (right to be forgotten)
     const id = ctx.params.id;
     //console.log(id);
     const permission = can.delete(ctx.state.user, parseInt(id));
     if(!permission.granted) {
-        ctx.status = 403;
+        return ctx.status = 403;
     } else {
         let result = await model.removeUser(id);
         if (result.affectedRows) {
@@ -131,28 +151,50 @@ async function removeUser(ctx) {
 async function getUserRoles(ctx) {
     const {id} = ctx.params;
     //console.log(id);
-    const result = await model.getUserRoles(id);
-    if (result.length) {
-        ctx.body = {roles : result};
+    //perms check
+    //console.log(ctx.state.user.role);
+    const permission = can.readAllRoles(ctx.state.user);
+    if (!permission.granted) {
+        return ctx.status = 403;
+
+    } else {
+        const result = await model.getUserRoles(id);
+        if (result.length) {
+            ctx.body = {roles : result};
+        }
     }
+
 }
 
 async function assignUserRole(ctx) {
-    const {id:user_id} = ctx.params;
-    const {role_id} = ctx.request.body;
-    const hasRole = await model.hasRole(user_id, role_id);
-    if(hasRole) {
-        ctx.status = 409; //conflict (user already has that role, can't assign it again)
-        return ctx.body = {created : false};
+    //perms check
+    const permission = can.assignRole(ctx.state.user);
+    if (!permission) {
+        return ctx.status = 403;
+
+    } else {
+        const {id:user_id} = ctx.params;
+        const {role_id} = ctx.request.body;
+        const hasRole = await model.hasRole(user_id, role_id);
+        if(hasRole) {
+            ctx.status = 409; //conflict (user already has that role, can't assign it again)
+            return ctx.body = {created : false};
+        }
+        const result = await model.assignUserRole(user_id, role_id);
+        if(result.affectedRows) {
+            ctx.status = 201;
+            ctx.body = {created : true};
+        }
     }
-    const result = await model.assignUserRole(user_id, role_id);
-    if(result.affectedRows) {
-        ctx.status = 201;
-        ctx.body = {created : true};
-    }
+
 }
 
 async function removeUserRole(ctx) {
+    //permissions check
+    const permission = can.deleteRole(ctx.state.user);
+    if(!permission) {
+        return ctx.status = 403;
+    }
     const {id:user_id} = ctx.params;
     const {role_id} = ctx.request.body;
     const hasRole = await model.hasRole(user_id, role_id);
