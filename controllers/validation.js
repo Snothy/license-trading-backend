@@ -1,6 +1,8 @@
 const {Validator, ValidationError} = require('jsonschema');
 
-const userSchema = require('../schemas/user.json');
+const createUserSchema = require('../schemas/createUser.json');
+const updateUserSchema = require('../schemas/updateUser.json');
+const AoRroleSchema = require('../schemas/assignOrRemoveUserRole.json');
 
 const validator = function(schema, resource) {
     const v = new Validator();
@@ -28,4 +30,6 @@ const validator = function(schema, resource) {
     return handler;
 }
 
-exports.validateUser = validator(userSchema, 'user')
+exports.validateCreateUser = validator(createUserSchema, 'user');
+exports.validateUpdateUser = validator(updateUserSchema, 'user');
+exports.validateAoRrole = validator(AoRroleSchema, 'user_roles');

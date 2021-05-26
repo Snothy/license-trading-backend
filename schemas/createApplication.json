@@ -1,0 +1,54 @@
+{
+    "schema" : "http://json-schema.org/draft-04/schema#",
+    "id" : "user",
+    "Title" : "User",
+    "description" : "A user account.",
+    "type" : "object",
+    "properties" : {
+        "username" : {
+            "description" : "",
+            "type" : ""
+        },
+        "password" : {
+            "description" : "",
+            "type" : ""
+        },
+        "email" : {
+            "description" : "",
+            "type" : ""
+        },
+        "firstName" : {
+            "description" : "",
+            "type" : ""
+        },
+        "lastName" : {
+            "description" : "",
+            "type" : ""
+        },
+        "firstName2" : {
+            "description" : "",
+            "type" : ""
+        },
+        "firstName3" : {
+            "description" : "",
+            "type" : ""
+        },
+        "firstName4" : {
+            "description" : "",
+            "type" : ""
+        },
+        "firstName5" : {
+            "description" : "",
+            "type" : ""
+        },
+        "firstName6" : {
+            "description" : "",
+            "type" : ""
+        },
+        "firstName7" : {
+            "description" : "",
+            "type" : ""
+        }
+    },
+    "required" : ["username", "password", "email"]
+}

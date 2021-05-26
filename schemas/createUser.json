@@ -1,0 +1,31 @@
+{
+    "schema" : "http://json-schema.org/draft-04/schema#",
+    "id" : "/users/register",
+    "Title" : "User",
+    "description" : "A user account.",
+    "type" : "object",
+    "properties" : {
+        "username" : {
+            "description" : "Name used to login.",
+            "type" : "string"
+        },
+        "password" : {
+            "description" : "String of characters used to verify identity on login.",
+            "type" : "string"
+        },
+        "email" : {
+            "description" : "Email address of the user.",
+            "type" : "string"
+        },
+        "firstName" : {
+            "description" : "The user's first name.",
+            "type" : "string"
+        },
+        "lastName" : {
+            "description" : "The user's last name.",
+            "type" : "string"
+        }
+    },
+    "required" : ["username", "password", "email", "firstName", "lastName"],
+    "additionalProperties" : false
+}

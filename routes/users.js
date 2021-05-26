@@ -6,7 +6,7 @@ const issueJwt = require('../strategies/issueJwt');
 const can = require('../permissions/users');
 const bcrypt = require('bcrypt');
 
-
+const {validateCreateUser, validateUpdateUser, validateAoRrole} = require('../controllers/validation');
 
 const router = Router({prefix : '/api/users'});
 
@@ -16,7 +16,7 @@ router.get('/', auth,  getAll);
 //router.post('/', bodyparser(), addUser);
 
 router.get('/:id([0-9]{1,})', auth, getById);
-router.put('/:id([0-9]{1,})', auth, bodyparser(), updateUser);
+router.put('/:id([0-9]{1,})', auth, bodyparser(), validateUpdateUser, updateUser);
 router.del('/:id([0-9]{1,})', auth, bodyparser(), removeUser);
 
 //???crud for roles??? here or separate route? (do i even make crud for roles?)
@@ -25,14 +25,14 @@ router.del('/:id([0-9]{1,})', auth, bodyparser(), removeUser);
 
 //roles ADMIN ONLY
 router.get('/:id([0-9]{1,})/roles', auth, getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
-router.post('/:id([0-9]{1,})/roles', auth, bodyparser(), assignUserRole); //create new entry in users_roles table (assign role) using user id
-router.del('/:id([0-9]{1,})/roles', auth, bodyparser(), removeUserRole);  //remove entry from users_roles table (remove role) using user id
+router.post('/:id([0-9]{1,})/roles', auth, bodyparser(), validateAoRrole, assignUserRole); //create new entry in users_roles table (assign role) using user id
+router.del('/:id([0-9]{1,})/roles', auth, bodyparser(), validateAoRrole, removeUserRole);  //remove entry from users_roles table (remove role) using user id
 
 //login&register
 //remove prefix somehow | new router, new file or remove the prefix
 router.post('/login', bodyparser(), login);
 //router.???('/'logout'), logout);
-router.post('/register', bodyparser(), createUser);
+router.post('/register', bodyparser(), validateCreateUser, createUser);
 
 //shelters ADMIN ONLY 
 //make sheltyer go assign
@@ -112,9 +112,9 @@ async function updateUser(ctx) {
             //console.log(user);
 
 
-            console.log(ctx.request.body);
+            //console.log(ctx.request.body);
             const newPass = typeof ctx.request.body.password != "undefined";
-            console.log(newPass);
+            //console.log(newPass);
             if (newPass) {
                 //user.password is not defined
                 //console.log(user);
@@ -173,14 +173,14 @@ async function assignUserRole(ctx) {
         return ctx.status = 403;
 
     } else {
-        const {id:user_id} = ctx.params;
-        const {role_id} = ctx.request.body;
-        const hasRole = await model.hasRole(user_id, role_id);
+        const {id:user_ID} = ctx.params;
+        const {role_ID} = ctx.request.body;
+        const hasRole = await model.hasRole(user_ID, role_ID);
         if(hasRole) {
             ctx.status = 409; //conflict (user already has that role, can't assign it again)
             return ctx.body = {created : false};
         }
-        const result = await model.assignUserRole(user_id, role_id);
+        const result = await model.assignUserRole(user_ID, role_ID);
         if(result.affectedRows) {
             ctx.status = 201;
             ctx.body = {created : true};
@@ -195,14 +195,14 @@ async function removeUserRole(ctx) {
     if(!permission) {
         return ctx.status = 403;
     }
-    const {id:user_id} = ctx.params;
-    const {role_id} = ctx.request.body;
-    const hasRole = await model.hasRole(user_id, role_id);
+    const {id:user_ID} = ctx.params;
+    const {role_ID} = ctx.request.body;
+    const hasRole = await model.hasRole(user_ID, role_ID);
     if(!hasRole) {
         ctx.status = 409;
         return ctx.body = {removed : false};
     }
-    const result = await model.removeUserRole(user_id, role_id);
+    const result = await model.removeUserRole(user_ID, role_ID);
     if(result.affectedRows) {
         ctx.status = 200;
         ctx.body = {removed : true};

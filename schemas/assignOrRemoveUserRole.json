@@ -1,0 +1,15 @@
+{
+    "schema" : "http://json-schema.org/draft-04/schema#",
+    "id" : "user/roles",
+    "Title" : "User_Roles",
+    "description" : "The roles assigned to a specific user.",
+    "type" : "object",
+    "properties" : {
+        "role_ID" : {
+            "description" : "The ID of the role.",
+            "type" : "integer"
+        }
+    },
+    "required" : ["role_ID"],
+    "additionalProperties" : false
+}
