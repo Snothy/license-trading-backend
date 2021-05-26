@@ -5,12 +5,12 @@ const model = require('../models/roles');
 //route only accessible by the admin role | manages staff/users
 const router = Router({prefix : '/api/roles'});
 
-router.get('/', getAllRoles);                               //list all roles
-router.post('/', bodyparser(), createRole);                 //create new roles
+router.get('/', auth, getAllRoles);                               //list all roles
+router.post('/', auth, bodyparser(), createRole);                 //create new roles
 
-router.get('/:id([0-9]{1,})', bodyparser(), getById);
-router.put('/:id([0-9]{1,})', bodyparser(), updateRole);    //update role
-router.del('/:id([0-9]{1,})', bodyparser(), removeRole);    //remove role
+router.get('/:id([0-9]{1,})', auth, bodyparser(), getById);
+router.put('/:id([0-9]{1,})', auth, bodyparser(), updateRole);    //update role
+router.del('/:id([0-9]{1,})', auth, bodyparser(), removeRole);    //remove role
 
 
 async function getAllRoles(ctx) {

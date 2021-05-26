@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
 const model = require('../models/applications');
 const auth = require('../controllers/auth');
+const can = require('../permissions/applications');
 
 const router = Router({prefix : '/api/applications'});
 
@@ -17,19 +18,38 @@ router.del('/:id([0-9]{1,})', auth, bodyparser(), removeApplication);
 //STAFF CAN FILTER AND SEARCH APPLICATIONS
 
 async function getAll(ctx) {
-    //get user_ID from context (logged in user, return their applications)
-    //if staff, show ALL applications
-    const user_ID = 2;
-    const result = await model.getAll(user_ID);
-    if (result.length) {
-        ctx.body = result;
+    //perform role check
+    const user = ctx.state.user;
+    const permission = can.readAll(user);
+    console.log(permission);
+    if (!permission.granted) {
+        console.log('b');
+        //role - user (get applications by user id)
+        const result = await model.getAllUser(user.ID);
+        if (result.length) {
+            return ctx.body = result;
+        }
+
+    } else {
+        //role - staff or admin (get all applications)
+        const result = await model.getAllStaff();
+        if (result.length) {
+            return ctx.body = result;
+        }
     }
+
 }
 
 async function getById(ctx) {
     const id = ctx.params.id;
     const result = await model.getById(id);
-    //console.log(result);
+
+    const permission = can.read(ctx.state.user, result.appData[0]);
+    console.log(permission);
+    if (!permission.granted) { 
+        return ctx.status = 403;
+    }
+    //console.log('a');
     if (result.appData.length) {
         const application = result.appData[0];
         const images = result.images;
@@ -39,10 +59,11 @@ async function getById(ctx) {
 
 async function createApplication(ctx) {
     const application = ctx.request.body;
+    application.user_ID = ctx.state.user.ID;
     const result = await model.createApplication(application);
+
     if (result.affectedRows) {
         const id = result.Id;
-        //console.log(result.insertId);
         ctx.status = 201;
         ctx.body = {ID: id, created : true, link : `${ctx.request.path}/${id}`};
     }
@@ -52,22 +73,43 @@ async function updateApplication(ctx) {
     const id = ctx.params.id;
     //Checking if application exists
     let result = await model.getById(id);
-    if (result.length) {
-        let application = result[0];
+    //console.log(result);
+    if (result.appData.length) {
+
+        //permission handling
+        const permission = can.update(ctx.state.user, result.appData[0]);
+        //console.log(permission);
+        //console.log(permission.granted);
+        if (!permission.granted) { 
+            return ctx.status = 403;
+        }
+
+        let application = result.appData[0];
+        //console.log(ctx.request.body);
         const {ID, dateRegistered, ...body} = ctx.request.body;
         Object.assign(application,body);
-        result = model.updateApplication(application);
+        //console.log(application);
+        result = await model.updateApplication(application);
+        //console.log(result);
         if (result.affectedRows) {
-            ctx.body = {ID : id, updated: true};
-        }
-    }
+            return ctx.body = {ID : id, updated: true};
+        } //ERROR HANDLIIIIING
+    } //else application doesnt exist HANDLE ERRORS
 }
 
 async function removeApplication(ctx) {
     const id = ctx.params.id;
+
+    //perms check
+    const application = await model.getById(id);
+    const permission = can.delete(ctx.state.user, application.appData[0]);
+    if (!permission.granted) { 
+        return ctx.status = 403;
+    }
+
     let result = await model.removeApplication(id);
     if (result.affectedRows) {
-        ctx.body = {ID : id, deleted : true};
+        return ctx.body = {ID : id, deleted : true};
     }
 }
 
