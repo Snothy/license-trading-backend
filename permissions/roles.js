@@ -1,5 +1,6 @@
 const AccessControl = require('role-acl');
 const ac = new AccessControl();
+
 ac
   .grant('administrator')
     .execute('read')
@@ -17,7 +18,7 @@ ac
 
 ac
 .grant('administrator')
-    .execute('delete')
+    .execute('remove')
     .on('roles');
 
 ac
@@ -34,8 +35,8 @@ ac
   .grant('staff')
     .extend('user')
 
-    
-exports.readAll = (requester) => {
+
+const readAll = (requester) => {
     return ac
         .can(requester.role)
         .execute('read')
@@ -43,34 +44,67 @@ exports.readAll = (requester) => {
         .on('roles');
     }
 
-    exports.read = (requester) => {
+const read = (requester) => {
     return ac
         .can(requester.role)
         .execute('read')
         .sync()
         .on('role');
-    }
+}
 
-    exports.update = (requester) => {
+const update = (requester) => {
     return ac
         .can(requester.role)
         .execute('update')
         .sync()
         .on('role');
-    }
+}
 
-    exports.delete = (requester) => {
+const remove = (requester) => {
     return ac
         .can(requester.role)
-        .execute('delete')
+        .execute('remove')
         .sync()
         .on('role');
-    }
+}
 
-    exports.create = (requester) => {
+const create = (requester) => {
     return ac
         .can(requester.role)
         .execute('create')
         .sync()
         .on('role');
+}
+
+const roleMiddleware = function (aControl) {
+
+    const handler = async function (ctx, next) {
+        user = ctx.state.user;
+        try {
+            const permission = aControl(user);
+            ///console.log(permission);
+            if (!permission.granted) {
+                return ctx.status = 403;
+            } else {
+                return next();
+            }
+        } catch (err) {
+            if (err instanceof ac) {
+                console.error(err);
+                ctx.status = 400;
+                ctx.body = err;
+            } else {
+                throw error;
+            }
+        }
     }
+    return handler
+}
+
+
+
+exports.readAll = roleMiddleware(readAll);
+exports.read = roleMiddleware(read);
+exports.update = roleMiddleware(update);
+exports.remove = roleMiddleware(remove);
+exports.create = roleMiddleware(create);

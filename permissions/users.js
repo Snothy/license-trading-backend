@@ -127,3 +127,4 @@ exports.deleteRole = (requester) => {
     .sync()
     .on('user_role');
 }
+
