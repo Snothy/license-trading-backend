@@ -1,6 +1,8 @@
 const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
 const model = require('../models/roles');
+const auth = require('../controllers/auth');
+const can = require('../permissions/roles');
 
 //route only accessible by the admin role | manages staff/users
 const router = Router({prefix : '/api/roles'});
@@ -14,7 +16,12 @@ router.del('/:id([0-9]{1,})', auth, bodyparser(), removeRole);    //remove role
 
 
 async function getAllRoles(ctx) {
-    //console.log('aaa')
+    //perms check
+    const permission = can.readAll(ctx.state.user);
+    if (!permission.granted) { 
+        return ctx.status = 403;
+    }
+
     const result = await model.getAllRoles();
     if (result.length) {
         ctx.body = result;
@@ -22,6 +29,12 @@ async function getAllRoles(ctx) {
 }
 
 async function getById(ctx) {
+    const permission = can.readAll(ctx.state.user);
+    console.log(permission);
+    if (!permission.granted) { 
+        return ctx.status = 403;
+    }
+
     const id = ctx.params.id;
     const result = await model.getById(id);
     if (result.length) {
@@ -31,6 +44,12 @@ async function getById(ctx) {
 }
 
 async function createRole(ctx) {
+    const permission = can.readAll(ctx.state.user);
+    console.log(permission);
+    if (!permission.granted) { 
+        return ctx.status = 403;
+    }
+
     const role = ctx.request.body;
     //console.log(role);
     const result = await model.createRole(role);
@@ -43,6 +62,12 @@ async function createRole(ctx) {
 }
 
 async function updateRole(ctx) {
+    const permission = can.readAll(ctx.state.user);
+    console.log(permission);
+    if (!permission.granted) { 
+        return ctx.status = 403;
+    }
+
     const id = ctx.params.id;
     //check if role exists
     let result = await model.getById(id);
@@ -58,6 +83,12 @@ async function updateRole(ctx) {
 }
 
 async function removeRole(ctx) {
+    const permission = can.readAll(ctx.state.user);
+    console.log(permission);
+    if (!permission.granted) { 
+        return ctx.status = 403;
+    }
+    
     const id = ctx.params.id;
     let result = await model.removeRole(id);
     if (result.affectedRows) {

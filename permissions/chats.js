@@ -53,44 +53,44 @@ ac
 
 
 
-  exports.readAll = (requester) => {
-    return ac
-      .can(requester.role)
-      //.context({requester:requester.ID, owner:data.ID})
-      .execute('read')
-      .sync()
-      .on('chats');
-  }
-  
-  exports.read = (requester, data) => {
-    return ac
-      .can(requester.role)
-      .context({requester:requester.ID, chatUser_ID:data.user_ID, chatStaff_ID:data.staff_ID})
-      .execute('read')
-      .sync()
-      .on('chat');
-  }
+exports.readAll = (requester) => {
+  return ac
+    .can(requester.role)
+    //.context({requester:requester.ID, owner:data.ID})
+    .execute('read')
+    .sync()
+    .on('chats');
+}
 
-  exports.readPending = (requester) => {
-    return ac
-      .can(requester.role)
-      .execute('read')
-      .sync()
-      .on('chatsPending');
-  }
-  
-  exports.updatePending = (requester) => {
-    return ac
-      .can(requester.role)
-      .execute('update')
-      .sync()
-      .on('chatsPending');
-  }
-  
-  exports.delete = (requester) => {
-    return ac
-      .can(requester.role)
-      .execute('delete')
-      .sync()
-      .on('chat');
-  }
+exports.read = (requester, data) => {
+  return ac
+    .can(requester.role)
+    .context({requester:requester.ID, chatUser_ID:data.user_ID, chatStaff_ID:data.staff_ID})
+    .execute('read')
+    .sync()
+    .on('chat');
+}
+
+exports.readPending = (requester) => {
+  return ac
+    .can(requester.role)
+    .execute('read')
+    .sync()
+    .on('chatsPending');
+}
+
+exports.updatePending = (requester) => {
+  return ac
+    .can(requester.role)
+    .execute('update')
+    .sync()
+    .on('chatsPending');
+}
+
+exports.delete = (requester) => {
+  return ac
+    .can(requester.role)
+    .execute('delete')
+    .sync()
+    .on('chat');
+}

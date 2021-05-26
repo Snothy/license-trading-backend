@@ -8,6 +8,8 @@ exports.getById = async function getById(id) {
     query = "SELECT roles.name AS role, users.* FROM users JOIN users_roles ON (users.ID = users_roles.user_ID) JOIN roles ON (roles.ID = users_roles.role_ID) WHERE users_roles.user_ID = ?;";
     const values = [id];
     const data = await db.run_query(query, values);
+
+    //maybe make a the roles attribute a list of all roles {[]} the user posseses (2 queries instead of a join cause joins are hard?)
     return data;
 }
 
