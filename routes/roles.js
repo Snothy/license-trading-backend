@@ -4,29 +4,28 @@ const model = require('../models/roles');
 const auth = require('../controllers/auth');
 const perms = require('../permissions/roles');
 
-const {validateCreateRole, validateUpdateRole} = require('../controllers/validation');
+const { validateCreateRole, validateUpdateRole } = require('../controllers/validation');
 
 //const {permsReadAll} = require('../permissions/roles');
 
 //route only accessible by the admin role | manages staff/users
-const router = Router({prefix : '/api/roles'});
+const router = Router({ prefix: '/api/roles' });
 
-router.get('/', auth, perms.readAll, getAllRoles);                                  //list all roles
+router.get('/', auth, perms.readAll, getAllRoles); //list all roles
 router.post('/', auth, perms.create, bodyparser(), validateCreateRole, createRole); //create new roles
 
 router.get('/:id([0-9]{1,})', auth, perms.read, bodyparser(), getById);
-router.put('/:id([0-9]{1,})', auth, perms.update, bodyparser(), validateUpdateRole, updateRole);    //update role
-router.del('/:id([0-9]{1,})', auth, perms.remove, bodyparser(), removeRole);                        //remove role
+router.put('/:id([0-9]{1,})', auth, perms.update, bodyparser(), validateUpdateRole, updateRole); //update role
+router.del('/:id([0-9]{1,})', auth, perms.remove, bodyparser(), removeRole); //remove role
 
-
-async function getAllRoles(ctx) {
+async function getAllRoles (ctx) {
     const result = await model.getAllRoles();
     if (result.length) {
         ctx.body = result;
     }
 }
 
-async function getById(ctx) {
+async function getById (ctx) {
     const id = ctx.params.id;
     const result = await model.getById(id);
     if (result.length) {
@@ -35,7 +34,7 @@ async function getById(ctx) {
     }
 }
 
-async function createRole(ctx) {
+async function createRole (ctx) {
     const role = ctx.request.body;
     //console.log(role);
     const result = await model.createRole(role);
@@ -43,31 +42,31 @@ async function createRole(ctx) {
         const id = result.Id;
         //console.log(result.insertId);
         ctx.status = 201;
-        ctx.body = {ID: id, created : true, link : `${ctx.request.path}/${id}`};
+        ctx.body = { ID: id, created: true, link: `${ctx.request.path}/${id}` };
     }
 }
 
-async function updateRole(ctx) {
+async function updateRole (ctx) {
     const id = ctx.params.id;
     //check if role exists
     let result = await model.getById(id);
     if (result.length) {
-        let role = result[0];
-        const {ID, ...body} = ctx.request.body;
-        Object.assign(role,body);
+        const role = result[0];
+        const { ID, ...body } = ctx.request.body;
+        Object.assign(role, body);
         result = await model.updateRole(role);
         if (result.affectedRows) {
-            ctx.body = {ID : id, updated: true};
+            ctx.body = { ID: id, updated: true };
         }
     }
 }
 
-async function removeRole(ctx) {
+async function removeRole (ctx) {
     const id = ctx.params.id;
-    let result = await model.removeRole(id);
+    const result = await model.removeRole(id);
     if (result.affectedRows) {
         ctx.status = 200;
-        ctx.body = {ID : id, deleted : true};
+        ctx.body = { ID: id, deleted: true };
     }
 }
 

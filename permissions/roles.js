@@ -2,39 +2,37 @@ const AccessControl = require('role-acl');
 const ac = new AccessControl();
 
 ac
-  .grant('administrator')
+    .grant('administrator')
     .execute('read')
     .on('roles');
 
 ac
-  .grant('administrator')
+    .grant('administrator')
     .execute('read')
     .on('role');
 
 ac
-  .grant('administrator')
+    .grant('administrator')
     .execute('update')
     .on('role');
 
 ac
-.grant('administrator')
+    .grant('administrator')
     .execute('remove')
     .on('role');
 
 ac
-.grant('administrator')
+    .grant('administrator')
     .execute('create')
     .on('role');
 
-
 //define user and staff so we dont get any errors when they try to access the route, but isntead they get a 403 status code
 ac
-  .grant('user')
+    .grant('user')
     .execute('something')
     .on('something')
-  .grant('staff')
-    .extend('user')
-
+    .grant('staff')
+    .extend('user');
 
 const readAll = (requester) => {
     return ac
@@ -42,7 +40,7 @@ const readAll = (requester) => {
         .execute('read')
         .sync()
         .on('roles');
-    }
+};
 
 const read = (requester) => {
     return ac
@@ -50,7 +48,7 @@ const read = (requester) => {
         .execute('read')
         .sync()
         .on('role');
-}
+};
 
 const update = (requester) => {
     return ac
@@ -58,7 +56,7 @@ const update = (requester) => {
         .execute('update')
         .sync()
         .on('role');
-}
+};
 
 const remove = (requester) => {
     return ac
@@ -66,7 +64,7 @@ const remove = (requester) => {
         .execute('remove')
         .sync()
         .on('role');
-}
+};
 
 const create = (requester) => {
     return ac
@@ -74,13 +72,12 @@ const create = (requester) => {
         .execute('create')
         .sync()
         .on('role');
-}
+};
 
 const roleMiddleware = function (aControl) {
-
     const handler = async function (ctx, next) {
         //console.log(ctx.state.user);
-        user = ctx.state.user;
+        const user = ctx.state.user;
         try {
             const permission = aControl(user);
             ///console.log(permission);
@@ -95,14 +92,12 @@ const roleMiddleware = function (aControl) {
                 ctx.status = 400;
                 ctx.body = err;
             } else {
-                throw error;
+                throw err;
             }
         }
-    }
-    return handler
-}
-
-
+    };
+    return handler;
+};
 
 exports.readAll = roleMiddleware(readAll);
 exports.read = roleMiddleware(read);

@@ -4,19 +4,19 @@ const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
-const keyPath = path.join(__dirname, '..', 'private-key.pem');  //same dir
-const keyPrivate = fs.readFileSync(keyPath, 'utf8');            //spec encoding
+const keyPath = path.join(__dirname, '..', 'private-key.pem'); //same dir
+const keyPrivate = fs.readFileSync(keyPath, 'utf8'); //spec encoding
 
-const verifyKeyPath = path.join(__dirname, '..', 'public-key.pem');
-const keyPub = fs.readFileSync(verifyKeyPath, 'utf8'); 
+//const verifyKeyPath = path.join(__dirname, '..', 'public-key.pem');
+//const keyPub = fs.readFileSync(verifyKeyPath, 'utf8');
 
-function issueJwt(user) {
+function issueJwt (user) {
     //console.log(user);
     const id = user[0].ID;
     //console.log(username);
     const expiresIn = '2w';
 
-    //payload passed into the verification strategy function 
+    //payload passed into the verification strategy function
     const payload = {};
     payload.sub = id; //{username: username, password : user[0].password};
     payload.iat = Date.now();
@@ -26,7 +26,7 @@ function issueJwt(user) {
     //console.log(username);
     //console.log("q");
     //console.log(payload.sub);
-    const signedToken = jwt.sign(payload, keyPrivate, {expiresIn: expiresIn, algorithm: "RS256", });
+    const signedToken = jwt.sign(payload, keyPrivate, { expiresIn: expiresIn, algorithm: 'RS256' });
     /*
     console.log(signedToken);
     //verify the token for testing  |  VERY USEFUL FOR DEBUGGING......
@@ -38,7 +38,7 @@ function issueJwt(user) {
     return {
         token: signedToken,
         expires: expiresIn
-    }
+    };
 }
 
 module.exports.issueJwt = issueJwt;

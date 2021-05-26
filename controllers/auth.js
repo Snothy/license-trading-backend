@@ -3,4 +3,4 @@ const jwt = require('../strategies/jwt');
 
 passport.use(jwt);
 
-module.exports = passport.authenticate('jwt', {session:false});
+module.exports = passport.authenticate('jwt', { session: false });

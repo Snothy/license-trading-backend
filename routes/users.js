@@ -6,57 +6,50 @@ const issueJwt = require('../strategies/issueJwt');
 const can = require('../permissions/users');
 const bcrypt = require('bcrypt');
 
-const {validateCreateUser, validateUpdateUser, validateAoRrole} = require('../controllers/validation');
+const { validateCreateUser, validateUpdateUser, validateAoRrole } = require('../controllers/validation');
 
-const router = Router({prefix : '/api/users'});
+const router = Router({ prefix: '/api/users' });
 
-//ONLY TESTED GETALL, GETBYID, POST
-//user routes
-router.get('/', auth,  getAll);
-//router.post('/', bodyparser(), addUser);
+// ONLY TESTED GETALL, GETBYID, POST
+// user routes
+router.get('/', auth, getAll);
+// router.post('/', bodyparser(), addUser);
 
 router.get('/:id([0-9]{1,})', auth, getById);
 router.put('/:id([0-9]{1,})', auth, bodyparser(), validateUpdateUser, updateUser);
 router.del('/:id([0-9]{1,})', auth, bodyparser(), removeUser);
 
-//???crud for roles??? here or separate route? (do i even make crud for roles?)
-//implement error handling for all routes
+// ???crud for roles??? here or separate route? (do i even make crud for roles?)
+// implement error handling for all routes
 
+// roles ADMIN ONLY
+router.get('/:id([0-9]{1,})/roles', auth, getUserRoles);// list all users and their roles, once a user is selected (:/id), can perform bottom actions on them
+router.post('/:id([0-9]{1,})/roles', auth, bodyparser(), validateAoRrole, assignUserRole); // create new entry in users_roles table (assign role) using user id
+router.del('/:id([0-9]{1,})/roles', auth, bodyparser(), validateAoRrole, removeUserRole);// remove entry from users_roles table (remove role) using user id
 
-//roles ADMIN ONLY
-router.get('/:id([0-9]{1,})/roles', auth, getUserRoles);                  //list all users and their roles, once a user is selected (:/id), can perform bottom actions on them                                  
-router.post('/:id([0-9]{1,})/roles', auth, bodyparser(), validateAoRrole, assignUserRole); //create new entry in users_roles table (assign role) using user id
-router.del('/:id([0-9]{1,})/roles', auth, bodyparser(), validateAoRrole, removeUserRole);  //remove entry from users_roles table (remove role) using user id
-
-//login&register
-//remove prefix somehow | new router, new file or remove the prefix
+// login&register
+// remove prefix somehow | new router, new file or remove the prefix
 router.post('/login', bodyparser(), login);
-//router.???('/'logout'), logout);
+// router.???('/'logout'), logout);
 router.post('/register', bodyparser(), validateCreateUser, createUser);
 
-//shelters ADMIN ONLY 
-//make sheltyer go assign
-//make shelter go remove
+// shelters ADMIN ONLY
+// make sheltyer go assign
+// make shelter go remove
 
-async function getAll(ctx) {
-    //console.log(ctx.session.id);
-    //console.log(ctx.state.id);
-    //console.log(ctx.state.user);
-
+async function getAll (ctx) {
     const permission = can.readAll(ctx.state.user);
-    //console.log(ctx.state.user);
-    if(!permission.granted) {
+    if (!permission.granted) {
         ctx.status = 403;
     } else {
         const result = await model.getAll();
-        //console.log("c");
         if (result.length) {
             return ctx.body = result;
         }
     }
 }
 
-async function getById(ctx) {
+async function getById (ctx) {
     const id = ctx.params.id;
     //console.log(ctx.state.user);
     const result = await model.getById(id);
@@ -89,31 +82,28 @@ async function addUser(ctx) {
 }
 */
 
-async function updateUser(ctx) {
-
+async function updateUser (ctx) {
     //HANDLE EXCEPTION FOR PASSWORD CHANGE
     //BCRYPT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //check for password change ?(if obj.password)??
-
 
     const id = ctx.params.id;
     //Checking if user exists
     let result = await model.getById(id);
     if (result.length) {
-        let user = result[0];
+        const user = result[0];
 
         const permission = can.update(ctx.state.user, user);
         if (!permission.granted) {
             return ctx.status = 403;
         } else {
-            const {ID, dateRegistered, ...body} = ctx.request.body;
-            Object.assign(user,body);
+            const { ID, dateRegistered, ...body } = ctx.request.body;
+            Object.assign(user, body);
             delete user.role;
             //console.log(user);
 
-
             //console.log(ctx.request.body);
-            const newPass = typeof ctx.request.body.password != "undefined";
+            const newPass = typeof ctx.request.body.password !== 'undefined';
             //console.log(newPass);
             if (newPass) {
                 //user.password is not defined
@@ -124,93 +114,88 @@ async function updateUser(ctx) {
             //console.log(user);
             result = await model.updateUser(user);
             if (result.affectedRows) {
-                ctx.body = {ID : id, updated: true};
+                ctx.body = { ID: id, updated: true };
             }
         }
     }
 }
 
-async function removeUser(ctx) {
+async function removeUser (ctx) {
     //following GDPR regulations, the user has permission to delete his data (right to be forgotten)
     const id = ctx.params.id;
     //console.log(id);
     const permission = can.delete(ctx.state.user, parseInt(id));
-    if(!permission.granted) {
+    if (!permission.granted) {
         return ctx.status = 403;
     } else {
-        let result = await model.removeUser(id);
+        const result = await model.removeUser(id);
         if (result.affectedRows) {
             ctx.status = 200;
-            ctx.body = {ID : id, deleted : true};
+            ctx.body = { ID: id, deleted: true };
         }
     }
 }
 
-
 //ROLES
-async function getUserRoles(ctx) {
-    const {id} = ctx.params;
+async function getUserRoles (ctx) {
+    const { id } = ctx.params;
     //console.log(id);
     //perms check
     //console.log(ctx.state.user.role);
     const permission = can.readAllRoles(ctx.state.user);
     if (!permission.granted) {
         return ctx.status = 403;
-
     } else {
         const result = await model.getUserRoles(id);
         if (result.length) {
-            ctx.body = {roles : result};
+            ctx.body = { roles: result };
         }
     }
-
 }
 
-async function assignUserRole(ctx) {
+async function assignUserRole (ctx) {
     //perms check
     const permission = can.assignRole(ctx.state.user);
     if (!permission) {
         return ctx.status = 403;
-
     } else {
-        const {id:user_ID} = ctx.params;
-        const {role_ID} = ctx.request.body;
+        const { id: user_ID } = ctx.params;
+        const { role_ID } = ctx.request.body;
         const hasRole = await model.hasRole(user_ID, role_ID);
-        if(hasRole) {
+        if (hasRole) {
             ctx.status = 409; //conflict (user already has that role, can't assign it again)
-            return ctx.body = {created : false};
+            return ctx.body = { created: false };
         }
         const result = await model.assignUserRole(user_ID, role_ID);
-        if(result.affectedRows) {
+        if (result.affectedRows) {
             ctx.status = 201;
-            ctx.body = {created : true};
+            ctx.body = { created: true };
         }
     }
-
 }
 
-async function removeUserRole(ctx) {
+async function removeUserRole (ctx) {
     //permissions check
     const permission = can.deleteRole(ctx.state.user);
-    if(!permission) {
+    if (!permission) {
         return ctx.status = 403;
     }
-    const {id:user_ID} = ctx.params;
-    const {role_ID} = ctx.request.body;
+    const { id: user_ID } = ctx.params;
+    const { role_ID } = ctx.request.body;
     const hasRole = await model.hasRole(user_ID, role_ID);
-    if(!hasRole) {
+    if (!hasRole) {
         ctx.status = 409;
-        return ctx.body = {removed : false};
+        return ctx.body = { removed: false };
     }
     const result = await model.removeUserRole(user_ID, role_ID);
-    if(result.affectedRows) {
+    if (result.affectedRows) {
         ctx.status = 200;
-        ctx.body = {removed : true};
+        ctx.body = { removed: true };
     }
 }
 
 //LOGIN & REGISTER
-async function login(ctx) {
+async function login (ctx) {
     const data = ctx.request.body;
     //console.log(data);
     try {
@@ -227,25 +212,24 @@ async function login(ctx) {
                 //console.log('c');
                 const token = issueJwt.issueJwt(user);
                 ctx.status = 200;
-                return ctx.body = {login : true, token : token.token, expiresIn : token.expires};
-
+                return ctx.body = { login: true, token: token.token, expiresIn: token.expires };
             } else {
                 //INVALID PASSWORD | redirect to same page
                 ctx.status = 401;
-                return ctx.body = {login : false, msg : "Invalid username or password."} //don't let the user know which was incorrect
+                return ctx.body = { login: false, msg: 'Invalid username or password.' }; //don't let the user know which was incorrect
             }
         } else {
             //INVALID USERNAME / NO DATA WAS INPUT | redirect to same page
             ctx.status = 401;
-            return ctx.body = {login : false, msg : "Invalid username or password"};
+            return ctx.body = { login: false, msg: 'Invalid username or password' };
         }
-    } catch(err) {
-        console.log(err);
+    } catch (err) {
+        console.error(err);
         //do something?
     }
 }
 
-async function createUser(ctx) {
+async function createUser (ctx) {
     //console.log('a');
     const data = ctx.request.body;
     //const password = ctx.request.body.password
@@ -256,14 +240,12 @@ async function createUser(ctx) {
         ctx.status = 201;
         const userData = await model.findByUsername(data.username);
         //userData[0].password = password;
-        //console.log(userData); 
+        //console.log(userData);
         const jwt = await issueJwt.issueJwt(userData); //assigning the user a JWT
         //the front end takes the assigned token and stores it somewhere for use for future transactions
 
-        ctx.body = {ID : id, created : true, token : jwt.token, expiresIn : jwt.expires};
+        ctx.body = { ID: id, created: true, token: jwt.token, expiresIn: jwt.expires };
     }
 }
 
-
 module.exports = router;
-

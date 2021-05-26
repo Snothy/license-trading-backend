@@ -6,7 +6,8 @@ The website being developed is for a License trading company.
 
 Authentication method - Json Web Tokens, using the RS256 signing algorithm (RSA Signature with SHA256).
 
-npm start - Run the server.
+npm start - Run the server. 
+npm run lint - Checks for eslint errors in the code.
 
 TODO
 npm test - Perform tests on all routes (jest)

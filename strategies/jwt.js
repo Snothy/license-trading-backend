@@ -1,19 +1,14 @@
-var JwtStrategy  = require('passport-jwt').Strategy;
-var ExtractJwt = require('passport-jwt').ExtractJwt;
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 const users = require('../models/users.js');
-const bcrypt = require('bcrypt');
-
-const passport = require('koa-passport');
-
-
 
 //GET PATH TO PUBLIC KEY
 const fs = require('fs');
 const path = require('path');
-const keyPath = path.join(__dirname, '..', 'public-key.pem');  //same dir
-const keyPub = fs.readFileSync(keyPath, 'utf8');            //spec encoding
+const keyPath = path.join(__dirname, '..', 'public-key.pem'); //same dir
+const keyPub = fs.readFileSync(keyPath, 'utf8'); //spec encoding
 
-var opts = {};
+const opts = {};
 //opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 //opts.jwtFromRequest =  ExtractJwt.fromUrlQueryParameter('secret_token')
@@ -28,11 +23,11 @@ opts.jwtFromRequest = function(req) {
 }
 */
 opts.secretOrKey = keyPub; // path to the !PUBLIC! id_rsa key for VERIFICATION
-opts.algorithms = ["RS256"]
+opts.algorithms = ['RS256'];
 
 //console.log(opts);
 
-const strategy = new JwtStrategy(opts, async function(jwt_payload, done) {
+const strategy = new JwtStrategy(opts, async function (jwt_payload, done) {
     //DO PASSWORD VALIDATIONNNNNNNNNNNN ???????????????????????????????????????????????
     //console.log('a');
     //console.log(jwt_payload); //iat and expire date
@@ -42,7 +37,7 @@ const strategy = new JwtStrategy(opts, async function(jwt_payload, done) {
         //console.log(jwt_payload.sub);
         //console.log(jwt_payload.sub.password);
         //console.log(jwt_payload.sub);
-        let userData = await users.getById(jwt_payload.sub);
+        const userData = await users.getById(jwt_payload.sub);
         //console.log('b');
         //userData = userData[0];
         //console.log(userData);
@@ -53,7 +48,7 @@ const strategy = new JwtStrategy(opts, async function(jwt_payload, done) {
             return done(null, userData[0]);
         } else {
             //user wasn't verified, could perform some action like refer to sign up
-            console.log("No user with this username found");
+            console.log('No user with this username found');
             return done(null, false);
         }
     } catch (err) {
@@ -61,8 +56,6 @@ const strategy = new JwtStrategy(opts, async function(jwt_payload, done) {
         return done(err, false);
     }
 });
-
-
 
 module.exports = strategy;
 
