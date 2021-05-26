@@ -4,6 +4,8 @@ const model = require('../models/chat');
 const auth = require('../controllers/auth');
 const can = require('../permissions/chats');
 
+const {validateCreateMessage, validateCreateChat} = require('../controllers/validation');
+
 //CHATS tab
 //user contacts a shelter where the dog is, the staff that is currently available at work (on their account) have access to that chat (staff users see all chats
 //for the shelter they work for)
@@ -14,19 +16,19 @@ const can = require('../permissions/chats');
 const router = Router({prefix : '/api/chats'});
 
 router.get('/', auth , getAllChats);                                   //perform role check and list all instances of chats the user belongs to
-router.post('/', auth, bodyparser(), createChat);                     //create new chat between user and shelter (done at shelter/:id uri to get the shelters id)
+router.post('/', auth, bodyparser(), validateCreateChat, createChat);  //create new chat between user and shelter (done at shelter/:id uri to get the shelters id)
 //create delete chat feature that deletes the chat after X amount of time of inactivity
 
 router.get('/:id([0-9]{1,})', auth, getById);                         //using the chat_ID we find & list all chat messages that belong to that chat
-router.post('/:id([0-9]{1,})', auth, bodyparser(), createMessage);    //add chat message to chat_ID from user_ID
+router.post('/:id([0-9]{1,})', auth, bodyparser(), validateCreateMessage, createMessage);    //add chat message to chat_ID from user_ID
 router.del('/:id([0-9]{1,})', auth, bodyparser(), removeMessage);     //staff can remove messages | requires the chat_message_ID, not the chat_ID
 
 router.get('/pending', auth, getPending);                             //Get all unanswered chat requests
-router.put('/pending', auth, bodyparser(), changeStatus);                                 //Set staff_ID in chats table to staff member to picked up the chat request 
+router.put('/pending', auth, bodyparser(), changeStatus);             //Set staff_ID in chats table to staff member to picked up the chat request 
 
 
 async function getAllChats(ctx) {
-    const user = ctx.state.user;     //user_id = 6 is a staff member for shelter_id = 1 -> he sees all chats and chat messages related to shelter_id = 1 \o/
+    const user = ctx.state.user; 
  
     const permission = can.readAll(user);
     //using this as a role check in this case

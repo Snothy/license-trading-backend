@@ -1,0 +1,15 @@
+{
+    "schema" : "http://json-schema.org/draft-04/schema#",
+    "id" : "/chat",
+    "Title" : "Chat message",
+    "description" : "The contents of the message being sent to a certain chat.",
+    "type" : "object",
+    "properties" : {
+        "message_content" : {
+            "description" : "The content of the message being sent (text).",
+            "type" : "string"
+        }
+    },
+    "required" : ["message_content"],
+    "additionalProperties" : false
+}

@@ -1,54 +1,29 @@
 {
     "schema" : "http://json-schema.org/draft-04/schema#",
-    "id" : "user",
-    "Title" : "User",
-    "description" : "A user account.",
+    "id" : "/application",
+    "Title" : "Application",
+    "description" : "An application by a user for a trading license awaiting approval.",
     "type" : "object",
     "properties" : {
-        "username" : {
-            "description" : "",
-            "type" : ""
+        "company_name" : {
+            "description" : "The name of the company.",
+            "type" : "string"
         },
-        "password" : {
-            "description" : "",
-            "type" : ""
+        "address" : {
+            "description" : "Current address the company resides in.",
+            "type" : "string"
         },
-        "email" : {
-            "description" : "",
-            "type" : ""
+        "postcode" : {
+            "type" : "string"
         },
-        "firstName" : {
-            "description" : "",
-            "type" : ""
+        "telephone_number" : {
+            "description" : "The company's official phone number.",
+            "type" : "integer"
         },
-        "lastName" : {
-            "description" : "",
-            "type" : ""
-        },
-        "firstName2" : {
-            "description" : "",
-            "type" : ""
-        },
-        "firstName3" : {
-            "description" : "",
-            "type" : ""
-        },
-        "firstName4" : {
-            "description" : "",
-            "type" : ""
-        },
-        "firstName5" : {
-            "description" : "",
-            "type" : ""
-        },
-        "firstName6" : {
-            "description" : "",
-            "type" : ""
-        },
-        "firstName7" : {
-            "description" : "",
-            "type" : ""
+        "insurance_company" : {
+            "description" : "The company's insurance company.",
+            "type" : "string"
         }
     },
-    "required" : ["username", "password", "email"]
+    "additionalProperties" : false
 }

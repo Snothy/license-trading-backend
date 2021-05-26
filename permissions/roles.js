@@ -14,17 +14,17 @@ ac
 ac
   .grant('administrator')
     .execute('update')
-    .on('roles');
+    .on('role');
 
 ac
 .grant('administrator')
     .execute('remove')
-    .on('roles');
+    .on('role');
 
 ac
 .grant('administrator')
     .execute('create')
-    .on('roles');
+    .on('role');
 
 
 //define user and staff so we dont get any errors when they try to access the route, but isntead they get a 403 status code
@@ -79,6 +79,7 @@ const create = (requester) => {
 const roleMiddleware = function (aControl) {
 
     const handler = async function (ctx, next) {
+        //console.log(ctx.state.user);
         user = ctx.state.user;
         try {
             const permission = aControl(user);

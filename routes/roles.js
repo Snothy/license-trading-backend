@@ -4,17 +4,19 @@ const model = require('../models/roles');
 const auth = require('../controllers/auth');
 const perms = require('../permissions/roles');
 
+const {validateCreateRole, validateUpdateRole} = require('../controllers/validation');
+
 //const {permsReadAll} = require('../permissions/roles');
 
 //route only accessible by the admin role | manages staff/users
 const router = Router({prefix : '/api/roles'});
 
-router.get('/', auth, perms.readAll, getAllRoles);                               //list all roles
-router.post('/', auth, perms.create, bodyparser(), createRole);                 //create new roles
+router.get('/', auth, perms.readAll, getAllRoles);                                  //list all roles
+router.post('/', auth, perms.create, bodyparser(), validateCreateRole, createRole); //create new roles
 
 router.get('/:id([0-9]{1,})', auth, perms.read, bodyparser(), getById);
-router.put('/:id([0-9]{1,})', auth, perms.update, bodyparser(), updateRole);    //update role
-router.del('/:id([0-9]{1,})', auth, perms.remove, bodyparser(), removeRole);    //remove role
+router.put('/:id([0-9]{1,})', auth, perms.update, bodyparser(), validateUpdateRole, updateRole);    //update role
+router.del('/:id([0-9]{1,})', auth, perms.remove, bodyparser(), removeRole);                        //remove role
 
 
 async function getAllRoles(ctx) {

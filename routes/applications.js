@@ -4,14 +4,17 @@ const model = require('../models/applications');
 const auth = require('../controllers/auth');
 const can = require('../permissions/applications');
 
+const {validateUpdateApplication, validateCreateApplication} = require('../controllers/validation');
+
 const router = Router({prefix : '/api/applications'});
 
 
 router.get('/', auth, getAll);
-router.post('/', auth, bodyparser(), createApplication);
+router.post('/', auth, bodyparser(), validateCreateApplication, createApplication);
+// !!!!!!! UPDATE DB SCHEMA FOR TELEPHONE_NUMBER !!!!!!!!! STRING NOT INT, INT IS INT
 
 router.get('/:id([0-9]{1,})', auth, getById);
-router.put('/:id([0-9]{1,})', auth, bodyparser(), updateApplication);
+router.put('/:id([0-9]{1,})', auth, bodyparser(), validateUpdateApplication, updateApplication);
 router.del('/:id([0-9]{1,})', auth, bodyparser(), removeApplication);
 
 //STAFF CAN UPDATE AN APPLICATIONS STATUS
@@ -21,9 +24,9 @@ async function getAll(ctx) {
     //perform role check
     const user = ctx.state.user;
     const permission = can.readAll(user);
-    console.log(permission);
+    //console.log(permission);
     if (!permission.granted) {
-        console.log('b');
+        //console.log('b');
         //role - user (get applications by user id)
         const result = await model.getAllUser(user.ID);
         if (result.length) {
@@ -45,7 +48,7 @@ async function getById(ctx) {
     const result = await model.getById(id);
 
     const permission = can.read(ctx.state.user, result.appData[0]);
-    console.log(permission);
+    //console.log(permission);
     if (!permission.granted) { 
         return ctx.status = 403;
     }
