@@ -6,8 +6,7 @@ const applications = require('../models/applications');
 
 //SETUP NEW DATABASE UPON EVERY TEST / and maybe upon every server start?
 
-//id of test user created | assigned in PUT user test method | to avoid getting user by username in every test the id is needed
-//adminToken and userToken are assigned in the POST test methods
+//id of test objects created | to avoid getting the objects in every test the id is needed (less function calls)
 let applicationId, roleId, userId, adminToken, userToken;
 
 const loginToken = async function (login) {
