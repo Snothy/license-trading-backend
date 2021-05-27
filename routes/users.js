@@ -114,6 +114,7 @@ async function updateUser (ctx) {
             //console.log(user);
             result = await model.updateUser(user);
             if (result.affectedRows) {
+                ctx.status = 200;
                 ctx.body = { ID: id, updated: true };
             }
         }
@@ -121,17 +122,17 @@ async function updateUser (ctx) {
 }
 
 async function removeUser (ctx) {
-    //following GDPR regulations, the user has permission to delete his data (right to be forgotten)
+    //following GDPR regulations, the user has permission to delete his data (right to be forgotten) lmao
     const id = ctx.params.id;
     //console.log(id);
-    const permission = can.delete(ctx.state.user, parseInt(id));
+    const permission = can.delete(ctx.state.user, parseInt(id)); //why am i parsing this int wtf
     if (!permission.granted) {
         return ctx.status = 403;
     } else {
         const result = await model.removeUser(id);
         if (result.affectedRows) {
             ctx.status = 200;
-            ctx.body = { ID: id, deleted: true };
+            return ctx.body = { ID: id, deleted: true };
         }
     }
 }

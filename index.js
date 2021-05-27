@@ -19,6 +19,9 @@ app.use(chats.routes());
 
 const port = process.env.PORT || 3000;
 
-app.listen(port);
-console.log(`API server running on port ${port}`);
-console.log('https://opera-ski-3000.codio-box.uk/api/');
+module.exports = app.listen(port);
+
+//module.exports = app;
+
+//console.log(`API server running on port ${port}`);
+//console.log('https://opera-ski-3000.codio-box.uk/api/');

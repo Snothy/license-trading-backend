@@ -24,6 +24,13 @@ exports.getById = async function getById (id) {
     return data;
 };
 
+exports.getByName = async function getByName (name) {
+    const query = 'SELECT * FROM applications WHERE company_name = ?;';
+    const values = [name];
+    const data = await db.run_query(query, values);
+    return data;
+};
+
 exports.createApplication = async function createApplication (application) {
     application.status = 1; //application status to pending
     const query = 'INSERT INTO applications SET ?;';
