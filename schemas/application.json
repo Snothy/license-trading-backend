@@ -1,0 +1,162 @@
+{
+    "schema" : "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+
+        "createApplication" : {
+            "$id" : "#createApplication",
+            "Title" : "Create Application",
+            "description" : "Data to create a new application",
+            "type" : "object",
+            "properties" : {
+                "company_name" : {
+                    "description" : "The name of the company.",
+                    "type" : "string"
+                },
+                "address" : {
+                    "description" : "Current address the company resides in.",
+                    "type" : "string"
+                },
+                "postcode" : {
+                    "type" : "string"
+                },
+                "telephone_number" : {
+                    "description" : "The company's official phone number.",
+                    "type" : "integer"
+                },
+                "insurance_company" : {
+                    "description" : "The company's insurance company.",
+                    "type" : "string"
+                }
+            },
+            "required" : ["company_name", "address", "postcode", "telephone_number", "insurance_company"],
+            "additionalProperties" : false
+        },
+
+
+
+        "updateApplication": {
+            "$id" : "#updateApplication",
+            "Title" : "Update application",
+            "description" : "Data to update an existing application.",
+            "type" : "object",
+            "properties" : {
+                "company_name" : {
+                    "description" : "The name of the company.",
+                    "type" : "string"
+                },
+                "address" : {
+                    "description" : "Current address the company resides in.",
+                    "type" : "string"
+                },
+                "postcode" : {
+                    "type" : "string"
+                },
+                "telephone_number" : {
+                    "description" : "The company's official phone number.",
+                    "type" : "integer"
+                },
+                "insurance_company" : {
+                    "description" : "The company's insurance company.",
+                    "type" : "string"
+                }
+            },
+            "additionalProperties" : false
+        },
+
+
+
+        "viewApplication": {
+            "$id" : "#viewApplication",
+            "Title" : "Application View",
+            "description" : "Data displayed to users and staff members.",
+            "type" : "object",
+            "properties" : {
+                "company_name" : {
+                    "description" : "The name of the company.",
+                    "type" : "string"
+                },
+                "address" : {
+                    "description" : "Current address the company resides in.",
+                    "type" : "string"
+                },
+                "postcode" : {
+                    "type" : "string"
+                },
+                "telephone_number" : {
+                    "description" : "The company's official phone number.",
+                    "type" : "integer"
+                },
+                "insurance_company" : {
+                    "description" : "The company's insurance company.",
+                    "type" : "string"
+                },
+                "status": {
+                    "description": "The status of the application. 1 is pending, 2 is accepted, 3 is rejected",
+                    "type": "integer"
+                },
+                "currentDate": {
+                    "description": "Creation date of the application",
+                    "type": "string"
+                }
+            }
+        },
+
+
+        
+        "updatedApplication": {
+            "$id" : "#updatedApplication",
+            "Title" : "Updated application",
+            "description" : "Data returned after an application was updated.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the updated application record",
+                    "type": "integer"
+                  },
+                "updated": {
+                    "description": "Boolean describing whether the record was updated",
+                    "type": "boolean"
+                }
+            }
+        },
+
+
+        "deletedApplication": {
+            "$id" : "#deletedApplication",
+            "Title" : "Deleted application",
+            "description" : "Data returned after an application was deleted.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the deleted application",
+                    "type": "integer"
+                  },
+                "deleted": {
+                    "description": "Boolean describing whether the application was deleted",
+                    "type": "boolean"
+                }
+            }
+        },
+
+
+
+
+
+        "updateApplicationStatus": {
+            "$id" : "#updateApplicationStatus",
+            "Title" : "Update application status",
+            "description" : "Data required to change the status of an application",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "Application ID",
+                    "type": "integer"
+                  },
+                "status": {
+                    "description": "Changing the application status code",
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

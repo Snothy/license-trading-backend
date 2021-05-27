@@ -1,14 +1,14 @@
 const { Validator, ValidationError } = require('jsonschema');
 
-const createUserSchema = require('../schemas/createUser.json');
-const updateUserSchema = require('../schemas/updateUser.json');
-const AoRroleSchema = require('../schemas/assignOrRemoveUserRole.json');
-const createApplication = require('../schemas/createApplication.json');
-const updateApplication = require('../schemas/updateApplication.json');
-const createMessage = require('../schemas/createMessage.json');
-const createChat = require('../schemas/createChat.json');
-const createRole = require('../schemas/createRole.json');
-const updateRole = require('../schemas/updateRole.json');
+const createUserSchema = require('../schemas/user.json').definitions.createUser;
+const updateUserSchema = require('../schemas/user.json').definitions.updateUser;
+const AoRroleSchema = require('../schemas/role.json').definitions.assignOrRemoveUserRole;
+const createApplication = require('../schemas/application.json').definitions.createApplication;
+const updateApplication = require('../schemas/application.json').definitions.updateApplication;
+const createMessage = require('../schemas/chat.json').definitions.createChat;
+const createChat = require('../schemas/chat.json').definitions.createMessage;
+const createRole = require('../schemas/role.json').definitions.createRole;
+const updateRole = require('../schemas/role.json').definitions.updateRole;
 
 const validator = function (schema, resource) {
     const v = new Validator();

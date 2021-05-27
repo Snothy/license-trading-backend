@@ -1,9 +1,0 @@
-{
-    "schema" : "http://json-schema.org/draft-04/schema#",
-    "id" : "/chat",
-    "Title" : "Chat",
-    "description" : "The chat between two users.",
-    "type" : "object",
-    "properties" : {},
-    "additionalProperties" : false
-}

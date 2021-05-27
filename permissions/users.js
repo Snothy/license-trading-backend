@@ -22,7 +22,7 @@ ac
 ac
     .grant('staff')
     .execute('read')
-    .on('user')
+    .on('user', ['*', '!password'])
     .grant('administrator')
     .extend('staff');
 

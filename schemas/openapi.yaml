@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: License Trading Company API
+  description: A web application for customers of the company to create applications, which are then reviewed by staff members and eventually approved or rejected.
+  contact:
+    name: Petar Drumev
+    email: drumevp@coventry.ac.uk
+  license: 
+    name: Apache 2.0,
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  url: 'https://opera-ski-3000.codio-box.uk/api/'
+  description: Development server
+tags:
+  name: Users
+  description: API endpoints for user and user role management
+  name: Applications
+  description: Perform CRUD operations on applications
+  name: Roles
+  description: Perform CRUD operations on roles
+  name: Chats
+  description: API endpoints for chats and chat messages
+
+paths:
+
+  /users:
+    summary: gaming
+
+    get:
+      tags: Users
+      description: Returns list of all users
+      responses: 
+        '200': 
+          description: Users obtained
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userList
+
+
+  /users/{user_ID}:
+    summary: Represents an individual user
+    parameters:
+      in: path
+      name: user_ID
+      schema:
+        type: integer
+      required: true
+      description: Numeric ID of the user
+      
+    get:
+      tags: Users
+      description: Returns a single user
+      responses:
+        '200':
+          description: User obtained
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userView
+          
+

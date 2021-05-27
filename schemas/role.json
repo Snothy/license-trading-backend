@@ -1,0 +1,118 @@
+{
+    "schema" : "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+
+
+        "createRole": {
+            "$id" : "#createRole",
+            "Title" : "Create role",
+            "description" : "Data to create a new role.",
+            "type" : "object",
+            "properties" : {
+                "name" : {
+                    "description" : "The name of the role.",
+                    "type" : "string"
+                },
+                "description" : {
+                    "description" : "Text describing the role's privileges.",
+                    "type" : "string"
+                }
+            },
+            "required" : ["name", "description"],
+            "additionalProperties" : false
+        },
+
+
+        "updateRole": {
+            "$id" : "#updateRole",
+            "Title" : "Update role",
+            "description" : "Data to update an existing role.",
+            "type" : "object",
+            "properties" : {
+                "name" : {
+                    "description" : "The name of the role.",
+                    "type" : "string"
+                },
+                "description" : {
+                    "description" : "Text describing the role's privileges.",
+                    "type" : "string"
+                }
+            },
+            "additionalProperties" : false
+        },
+
+
+
+        "viewRole": {
+            "$id" : "#viewRole",
+            "Title" : "Role view",
+            "description" : "Data displayed to admins only.",
+            "type" : "object",
+            "properties" : {
+                "name" : {
+                    "description" : "The name of the role.",
+                    "type" : "string"
+                },
+                "description" : {
+                    "description" : "Text describing the role's privileges.",
+                    "type" : "string"
+                }
+            }
+        },
+
+
+
+        "updatedRole": {
+            "$id" : "#updatedRole",
+            "Title" : "Updated role",
+            "description" : "Data returned after a role was updated.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the updated role",
+                    "type": "integer"
+                  },
+                "updated": {
+                    "description": "Boolean describing whether the role was updated",
+                    "type": "boolean"
+                }
+            }
+        },
+
+
+        "deletedRole": {
+            "$id" : "#deletedRole",
+            "Title" : "Deleted role",
+            "description" : "Data returned after a role was deleted.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the deleted role",
+                    "type": "integer"
+                  },
+                "deleted": {
+                    "description": "Boolean describing whether the role was deleted",
+                    "type": "boolean"
+                }
+            }
+        },
+
+
+        "assignOrRemoveUserRole": {
+            "$id" : "#assignOrRemoveUserRole",
+            "Title" : "Assign or remove user role",
+            "description" : "Data to assign or remove a role to/from a user.",
+            "type" : "object",
+            "properties" : {
+                "role_ID" : {
+                    "description" : "The ID of the role.",
+                    "type" : "integer"
+                }
+            },
+            "required" : ["role_ID"],
+            "additionalProperties" : false
+        }
+
+
+    }
+}

@@ -26,6 +26,7 @@
     "koa-passport": "^4.1.4",
     "koa-router": "^10.0.0",
     "mysql": "^2.18.1",
+    "openapi": "^1.0.0",
     "passport-jwt": "^4.0.0",
     "promise-mysql": "^5.0.3",
     "role-acl": "^4.5.4",

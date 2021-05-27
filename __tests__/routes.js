@@ -267,7 +267,7 @@ describe('DEL Endpoints', function () {
                 //console.log(res.body);
             });
     });
-    it('delete a user account', async function () {
+    it('remove a user account', async function () {
         //get test user id
         //const user = await users.findByUsername('test1');
         //const id = user[0].ID;

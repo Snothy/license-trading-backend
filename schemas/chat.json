@@ -1,0 +1,107 @@
+{
+    "schema" : "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+
+
+        "chat": {
+            "$id": "#chat",
+            "Title": "Chat",
+            "description": "The data representing a chat between two users",
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "description": "ID of the chat record",
+                    "type" : "integer"
+                },
+                "user_ID": {
+                    "description": "ID of the user who created the chat",
+                    "type": "integer"
+                },
+                "staff_ID": {
+                    "description": "ID of the staff member who responded to the chat. Null is chat is still pending a response.",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "Number representing the status of the chat. 1 is pending, 2 is in progress, 3 is resolved.",
+                    "type": "integer"
+                }
+            },
+            "required" : ["ID", "user_ID", "staff_ID", "status"],
+            "additionalProperties" : false
+        },
+
+
+        "chatMessage": {
+            "$id": "#chatMessage",
+            "Title": "Chat message",
+            "description": "The contents of a message by a user",
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "description": "ID of the chat message record",
+                    "type" : "integer"
+                },
+                "chat_ID": {
+                    "description": "ID of the chat the message belongs to",
+                    "type": "integer"
+                },
+                "user_ID": {
+                    "description": "ID of the user who sent the message",
+                    "type": "integer"
+                },
+                "date_sent": {
+                    "description": "The date and time the message was sent at",
+                    "type": "string"
+                },
+                "message_content": {
+                    "description": "The user's message",
+                    "type": "string"
+                }
+            },
+            "required" : ["ID", "chat_ID", "user_ID", "date_sent", "message_content"],
+            "additionalProperties" : false
+        },
+
+
+        "createChat": {
+            "$id" : "#createChat",
+            "Title" : "Create chat",
+            "description" : "The chat between two users.",
+            "type" : "object",
+            "properties" : {},
+            "additionalProperties" : false
+        },
+
+        "createMessage": {
+            "$id" : "#createMessage",
+            "Title" : "Chat message",
+            "description" : "The contents of the message being sent to a certain chat.",
+            "type" : "object",
+            "properties" : {
+                "message_content" : {
+                    "description" : "The content of the message being sent (text).",
+                    "type" : "string"
+                }
+            },
+            "required" : ["message_content"],
+            "additionalProperties" : false
+        },
+
+
+        "chatList": {
+            "$id": "#chatList",
+            "title": "Chat List",
+            "description": "List of all chats visible to the user logged in.",
+            "type": "array",
+            "items": {"$ref": "#/definitions/chat"}
+          },
+
+        "messageList": {
+            "$id": "#messageList",
+            "title": "Message List",
+            "description": "List of all messages as part of a chat.",
+            "type": "array",
+            "items": {"$ref": "#/definitions/chatMessage"}
+        }
+    }
+}
