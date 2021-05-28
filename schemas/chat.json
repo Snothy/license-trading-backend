@@ -87,8 +87,42 @@
             "additionalProperties" : false
         },
 
+        "createdChat": {
+            "$id" : "#createdChat",
+            "Title" : "Created chat",
+            "description" : "Data returned after a chat was created.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the created chat",
+                    "type": "integer"
+                  },
+                "created": {
+                    "description": "Boolean describing whether the chat was created",
+                    "type": "boolean"
+                }
+            }
+        },
 
-        "chatList": {
+        "createdMessage": {
+            "$id" : "#createdMessage",
+            "Title" : "Created message",
+            "description" : "Data returned after a message was created.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the created message",
+                    "type": "integer"
+                  },
+                "created": {
+                    "description": "Boolean describing whether the message was created",
+                    "type": "boolean"
+                }
+            }
+        },
+
+
+        "listChat": {
             "$id": "#chatList",
             "title": "Chat List",
             "description": "List of all chats visible to the user logged in.",
@@ -96,12 +130,47 @@
             "items": {"$ref": "#/definitions/chat"}
           },
 
-        "messageList": {
+        "listMessage": {
             "$id": "#messageList",
             "title": "Message List",
             "description": "List of all messages as part of a chat.",
             "type": "array",
             "items": {"$ref": "#/definitions/chatMessage"}
+        },
+
+        "deletedChat": {
+            "$id" : "#deletedChat",
+            "Title" : "Deleted chat",
+            "description" : "Data returned after a chat was deleted.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the deleted chat",
+                    "type": "integer"
+                  },
+                "created": {
+                    "description": "Boolean describing whether the chat was deleted",
+                    "type": "boolean"
+                }
+            }
+        },
+
+        "deletedMessage": {
+            "$id" : "#deletedMessage",
+            "Title" : "Deleted message",
+            "description" : "Data returned after a message was deleted.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the created message",
+                    "type": "integer"
+                  },
+                "created": {
+                    "description": "Boolean describing whether the message was deleted",
+                    "type": "boolean"
+                }
+            }
         }
+
     }
 }

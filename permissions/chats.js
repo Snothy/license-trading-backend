@@ -46,6 +46,13 @@ ac
     .grant('administrator')
     .extend('staff');
 
+ac
+    .grant('staff')
+    .execute('delete')
+    .on('chatMessage')
+    .grant('administrator')
+    .extend('staff');
+
 exports.readAll = (requester) => {
     return ac
         .can(requester.role)
@@ -86,4 +93,12 @@ exports.delete = (requester) => {
         .execute('delete')
         .sync()
         .on('chat');
+};
+
+exports.deleteMessage = (requester) => {
+    return ac
+        .can(requester.role)
+        .execute('delete')
+        .sync()
+        .on('chatMessage');
 };

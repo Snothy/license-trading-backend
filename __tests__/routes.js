@@ -3,11 +3,12 @@ const app = require('../index.js');
 const users = require('../models/users');
 const roles = require('../models/roles');
 const applications = require('../models/applications');
+const chats = require('../models/chats');
 
 //SETUP NEW DATABASE UPON EVERY TEST / and maybe upon every server start?
 
 //id of test objects created | to avoid getting the objects in every test the id is needed (less function calls)
-let applicationId, roleId, userId, adminToken, userToken;
+let messageId, chatId, applicationId, roleId, userId, adminToken, userToken;
 
 const loginToken = async function (login) {
     let token;
@@ -21,7 +22,7 @@ const loginToken = async function (login) {
 };
 
 const adminLogin = { username: 'admin1', password: 'admin1' };
-const userLogin = { username: 'user1', password: 'user1' }; //might want to assign the userToken to the test1 user
+//const userLogin = { username: 'user1', password: 'user1' }; //might want to assign the userToken to the test1 user
 
 /*
 let server, agent;
@@ -53,7 +54,7 @@ describe('POST Endpoints', function () {
             .send({ username: 'test1', password: 'test1', email: 'test1@gmail.com', firstName: 'test1', lastName: 'test1' })
             .expect(201)
             .expect((res) => {
-                //console.log(res.body);
+                userToken = res.body.token;
             });
     });
     it('create a role', async function () {
@@ -94,6 +95,22 @@ describe('POST Endpoints', function () {
             .expect((res) => {
                 //console.log(res.body);
             });
+    });
+    it('create a chat', async function () {
+        await request.agent(app)
+            .post('/api/chats')
+            .set('Authorization', 'Bearer ' + userToken)
+            .expect(201);
+    });
+    it('create a message', async function () {
+        const chat = await chats.getChatByUserId(userId);
+        chatId = chat[0].ID;
+        const routeStr = '/api/chats/'.concat(chatId.toString());
+        await request.agent(app)
+            .post(routeStr)
+            .set('Authorization', 'Bearer ' + userToken)
+            .send({ message_content: 'Hello this is a test message' })
+            .expect(201); //and expect {updated: true}
     });
 });
 
@@ -144,7 +161,7 @@ describe('GET Endpoints', function () {
             });
     });
     it('user - get all users', async function () {
-        userToken = await loginToken(userLogin);
+        //userToken = await loginToken(userLogin);
         await request.agent(app)
             .get('/api/users')
             .set('Authorization', 'Bearer ' + userToken)
@@ -246,6 +263,23 @@ describe('GET Endpoints', function () {
 });
 
 describe('DEL Endpoints', function () {
+    it('remove a message', async function () {
+        const message = await chats.getMessageByUserId(userId);
+        messageId = message[0].ID;
+        const routeStr = '/api/chats/removeMessage';
+        await request.agent(app)
+            .del(routeStr)
+            .set('Authorization', 'Bearer ' + adminToken)
+            .send({ message_id: messageId })
+            .expect(200); //and expect {updated: true}
+    });
+    it('remove a chat', async function () {
+        const routeStr = '/api/chats/'.concat(chatId.toString());
+        await request.agent(app)
+            .del(routeStr)
+            .set('Authorization', 'Bearer ' + adminToken)
+            .expect(200); //and expect {updated: true}
+    });
     it('remove an application', async function () {
         const routeStr = '/api/applications/'.concat(applicationId.toString());
         await request.agent(app)

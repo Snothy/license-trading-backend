@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
-const model = require('../models/chat');
+const model = require('../models/chats');
 const auth = require('../controllers/auth');
 const can = require('../permissions/chats');
 
@@ -17,11 +17,12 @@ const router = Router({ prefix: '/api/chats' });
 
 router.get('/', auth, getAllChats); //perform role check and list all instances of chats the user belongs to
 router.post('/', auth, bodyparser(), validateCreateChat, createChat); //create new chat between user and shelter (done at shelter/:id uri to get the shelters id)
+router.del('/:id([0-9]{1,})', auth, bodyparser(), removeChat);
 //create delete chat feature that deletes the chat after X amount of time of inactivity
 
 router.get('/:id([0-9]{1,})', auth, getById); //using the chat_ID we find & list all chat messages that belong to that chat
 router.post('/:id([0-9]{1,})', auth, bodyparser(), validateCreateMessage, createMessage); //add chat message to chat_ID from user_ID
-router.del('/:id([0-9]{1,})', auth, bodyparser(), removeMessage); //staff can remove messages | requires the chat_message_ID, not the chat_ID
+router.del('/removeMessage', auth, bodyparser(), removeMessage); //staff can remove messages | requires the chat_message_ID, not the chat_ID
 
 router.get('/pending', auth, getPending); //Get all unanswered chat requests
 router.put('/pending', auth, bodyparser(), changeStatus); //Set staff_ID in chats table to staff member to picked up the chat request
@@ -65,6 +66,22 @@ async function createChat (ctx) {
     }
 }
 
+async function removeChat (ctx) {
+    const chat_id = ctx.params.id;
+
+    //perms check, only admins can remove chats
+    const permission = can.delete(ctx.state.user);
+    if (!permission.granted) {
+        return ctx.status = 403;
+    }
+
+    const result = await model.removeChat(chat_id);
+    if (result.affectedRows) {
+        ctx.status = 200;
+        return ctx.body = { ID: chat_id, deleted: true };
+    }
+}
+
 async function getById (ctx) {
     const chat_id = ctx.params.id;
     const chat = await model.getChatById(chat_id);
@@ -96,15 +113,22 @@ async function createMessage (ctx) {
     const result = await model.createMessage(message);
     if (result.affectedRows) {
         ctx.status = 201;
-        return ctx.body = { created: true };
+        return ctx.body = { ID: chat_id, created: true };
     }
 }
 
 async function removeMessage (ctx) {
-    const message_id = ctx.request.body; //not sure if its request.body for HTTP DELETE
+    const message_id = ctx.request.body.message_id;
+
+    const permission = can.deleteMessage(ctx.state.user);
+    if (!permission.granted) {
+        return ctx.status = 403;
+    }
+
     const result = await model.removeMessage(message_id);
     if (result.affectedRows) {
-        return ctx.body = { removed: true };
+        ctx.status = 200;
+        return ctx.body = { ID: message_id, deleted: true };
     }
 }
 

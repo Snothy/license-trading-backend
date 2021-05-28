@@ -60,9 +60,25 @@ exports.createChat = async function createChat (chat) {
     return data;
 };
 
+exports.removeChat = async function removeChat (chat_id) {
+    let query = 'DELETE FROM chat_messages WHERE chat_ID = ?';
+    await db.run_query(query, chat_id);
+
+    query = 'DELETE FROM chats WHERE ID = ?';
+    const data = await db.run_query(query, chat_id);
+    return data;
+};
+
 exports.getChatById = async function getChatById (chat_id) {
     const query = 'SELECT * FROM chats WHERE ID = ?;';
     const values = [chat_id];
+    const data = await db.run_query(query, values);
+    return data;
+};
+
+exports.getChatByUserId = async function getChatByUserId (user_id) {
+    const query = 'SELECT * FROM chats WHERE user_ID = ?;';
+    const values = [user_id];
     const data = await db.run_query(query, values);
     return data;
 };
@@ -80,8 +96,15 @@ exports.createMessage = async function createMessage (message) {
     return data;
 };
 
+exports.getMessageByUserId = async function getMessageByUserId (user_id) {
+    const query = 'SELECT * FROM chat_messages WHERE user_ID = ?;';
+    const values = [user_id];
+    const data = await db.run_query(query, values);
+    return data;
+};
+
 exports.removeMessage = async function removeMessage (message_id) {
-    const query = 'DELETE FROM chat_messages WHERE message_ID = ?;';
+    const query = 'DELETE FROM chat_messages WHERE ID = ?;';
     const values = [message_id];
     const data = await db.run_query(query, values);
     return data;

@@ -5,10 +5,11 @@ const updateUserSchema = require('../schemas/user.json').definitions.updateUser;
 const AoRroleSchema = require('../schemas/role.json').definitions.assignOrRemoveUserRole;
 const createApplication = require('../schemas/application.json').definitions.createApplication;
 const updateApplication = require('../schemas/application.json').definitions.updateApplication;
-const createMessage = require('../schemas/chat.json').definitions.createChat;
-const createChat = require('../schemas/chat.json').definitions.createMessage;
+const createMessage = require('../schemas/chat.json').definitions.createMessage;
+const createChat = require('../schemas/chat.json').definitions.createChat;
 const createRole = require('../schemas/role.json').definitions.createRole;
 const updateRole = require('../schemas/role.json').definitions.updateRole;
+//const removeChatMessage
 
 const validator = function (schema, resource) {
     const v = new Validator();
