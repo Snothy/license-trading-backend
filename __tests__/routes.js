@@ -5,6 +5,7 @@ const roles = require('../models/roles');
 const applications = require('../models/applications');
 const chats = require('../models/chats');
 
+//Separate the test file into cases for each route (sep of concerns)
 //SETUP NEW DATABASE UPON EVERY TEST / and maybe upon every server start?
 
 //id of test objects created | to avoid getting the objects in every test the id is needed (less function calls)

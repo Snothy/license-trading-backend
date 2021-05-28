@@ -2,7 +2,47 @@
     "schema" : "http://json-schema.org/draft-04/schema#",
     "definitions": {
 
+        "user": {
+            "$id" : "#user",
+            "Title" : "User",
+            "description" : "Data that makes up a user.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the user record",
+                    "type": "integer"
+                },
+                "password" : {
+                    "description" : "String of characters used to verify identity on login.",
+                    "type" : "string"
+                },
+                "username" : {
+                    "description" : "Name used to login.",
+                    "type" : "string"
+                },
 
+                "email" : {
+                    "description" : "Email address of the user.",
+                    "type" : "string"
+                },
+                "firstName" : {
+                    "description" : "The user's first name.",
+                    "type" : "string"
+                },
+                "lastName" : {
+                    "description" : "The user's last name.",
+                    "type" : "string"
+                },
+                "dateRegistered": {
+                    "description": "The time and date the user account was created",
+                    "type": "string"
+                },
+                "modified":  {
+                    "description": "The time and date the user account was last modified",
+                    "type": "string"
+                }
+            }
+        },
 
         "createUser": {
             "$id" : "#createUser",
@@ -64,6 +104,48 @@
         },
 
 
+        "logInUser": {
+            "$id" : "#logInUser",
+            "Title" : "Log in user",
+            "description" : "Data user provides to log in",
+            "type" : "object",
+            "properties" : {
+                "username" : {
+                    "description" : "Name used to login.",
+                    "type" : "string"
+                },
+                "password" : {
+                    "description" : "String of characters used to verify identity on login.",
+                    "type" : "string"
+                }
+            },
+            "required" : ["username", "password"],
+            "additionalProperties" : false
+        },
+
+
+        "loggedInUser": {
+            "$id" : "#loggedInUser",
+            "Title" : "Logged in user",
+            "description" : "Data returned upon successful log in",
+            "type" : "object",
+            "properties" : {
+                "login" : {
+                    "description" : "Boolean describing whether the login was successful.",
+                    "type" : "bool"
+                },
+                "token": {
+                    "description": "JWT Token assigned to the user",
+                    "type": "string"
+                },
+                "expiresIn" : {
+                    "description" : "Date describing when the assigned jwt token will expire",
+                    "type" : "string"
+                }
+            }
+        },
+
+
 
         "viewUser": {
             "$id" : "#viewUser",
@@ -103,12 +185,12 @@
         },
 
 
-        "userList": {
-            "$id": "#userList",
+        "listUser": {
+            "$id": "#listUser",
             "title": "User List",
             "description": "List of all users visible to admin only.",
             "type": "array",
-            "items": {"$ref": "#/definitions/userView"}
+            "items": {"$ref": "#/definitions/viewUser"}
           },
 
 
@@ -125,6 +207,28 @@
                 "updated": {
                     "description": "Boolean describing whether the record was updated",
                     "type": "boolean"
+                }
+            }
+        },
+
+
+        "createdUser": {
+            "$id" : "#createdUser",
+            "Title" : "Created user",
+            "description" : "Data returned after a user was created.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the updated user record",
+                    "type": "integer"
+                  },
+                "token": {
+                    "description": "JWT Token assigned to the user",
+                    "type": "string"
+                },
+                "expiresIn" : {
+                    "description" : "Date describing when the assigned jwt token will expire",
+                    "type" : "string"
                 }
             }
         },

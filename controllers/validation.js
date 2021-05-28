@@ -9,6 +9,7 @@ const createMessage = require('../schemas/chat.json').definitions.createMessage;
 const createChat = require('../schemas/chat.json').definitions.createChat;
 const createRole = require('../schemas/role.json').definitions.createRole;
 const updateRole = require('../schemas/role.json').definitions.updateRole;
+const logInUser = require('../schemas/user.json').definitions.logInUser;
 //const removeChatMessage
 
 const validator = function (schema, resource) {
@@ -25,7 +26,7 @@ const validator = function (schema, resource) {
             await next();
         } catch (err) {
             if (err instanceof ValidationError) {
-                console.log(err);
+                //console.log(err);
                 ctx.status = 400;
                 ctx.body = err;
             } else {
@@ -45,3 +46,4 @@ exports.validateCreateMessage = validator(createMessage, 'chat');
 exports.validateCreateChat = validator(createChat, 'chat');
 exports.validateCreateRole = validator(createRole, 'chat');
 exports.validateUpdateRole = validator(updateRole, 'chat');
+exports.logInUser = validator(logInUser, 'user');

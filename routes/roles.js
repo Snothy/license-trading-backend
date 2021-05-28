@@ -42,7 +42,7 @@ async function createRole (ctx) {
         const id = result.Id;
         //console.log(result.insertId);
         ctx.status = 201;
-        ctx.body = { ID: id, created: true, link: `${ctx.request.path}/${id}` };
+        ctx.body = { ID: id, created: true };
     }
 }
 
@@ -56,7 +56,8 @@ async function updateRole (ctx) {
         Object.assign(role, body);
         result = await model.updateRole(role);
         if (result.affectedRows) {
-            ctx.body = { ID: id, updated: true };
+            ctx.status = 200;
+            return ctx.body = { ID: id, updated: true };
         }
     }
 }

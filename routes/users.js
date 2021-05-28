@@ -6,7 +6,7 @@ const issueJwt = require('../strategies/issueJwt');
 const can = require('../permissions/users');
 const bcrypt = require('bcrypt');
 
-const { validateCreateUser, validateUpdateUser, validateAoRrole } = require('../controllers/validation');
+const { logInUser, validateCreateUser, validateUpdateUser, validateAoRrole } = require('../controllers/validation');
 
 const router = Router({ prefix: '/api/users' });
 
@@ -29,7 +29,7 @@ router.del('/:id([0-9]{1,})/roles', auth, bodyparser(), validateAoRrole, removeU
 
 // login&register
 // remove prefix somehow | new router, new file or remove the prefix
-router.post('/login', bodyparser(), login);
+router.post('/login', bodyparser(), logInUser, login);
 // router.???('/'logout'), logout);
 router.post('/register', bodyparser(), validateCreateUser, createUser);
 

@@ -123,16 +123,16 @@
 
 
         "listChat": {
-            "$id": "#chatList",
-            "title": "Chat List",
+            "$id": "#listChat",
+            "title": "List chat",
             "description": "List of all chats visible to the user logged in.",
             "type": "array",
             "items": {"$ref": "#/definitions/chat"}
           },
 
         "listMessage": {
-            "$id": "#messageList",
-            "title": "Message List",
+            "$id": "#listMessage",
+            "title": "List message",
             "description": "List of all messages as part of a chat.",
             "type": "array",
             "items": {"$ref": "#/definitions/chatMessage"}
@@ -150,6 +150,23 @@
                   },
                 "created": {
                     "description": "Boolean describing whether the chat was deleted",
+                    "type": "boolean"
+                }
+            }
+        },
+
+        "changeStatusChat": {
+            "$id" : "#changeStatusChat",
+            "Title" : "Change status of a chat",
+            "description" : "Updating the status of a chat to a different state.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the chat",
+                    "type": "integer"
+                  },
+                "updated": {
+                    "description": "Boolean describing whether chat status was changed",
                     "type": "boolean"
                 }
             }

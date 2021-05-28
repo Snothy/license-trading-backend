@@ -65,7 +65,7 @@ async function createApplication (ctx) {
     if (result.affectedRows) {
         const id = result.Id;
         ctx.status = 201;
-        ctx.body = { ID: id, created: true, link: `${ctx.request.path}/${id}` };
+        ctx.body = { ID: id, created: true };
     }
 }
 
@@ -91,6 +91,7 @@ async function updateApplication (ctx) {
         result = await model.updateApplication(application);
         //console.log(result);
         if (result.affectedRows) {
+            ctx.status = 200;
             return ctx.body = { ID: id, updated: true };
         } //ERROR HANDLIIIIING
     } //else application doesnt exist HANDLE ERRORS

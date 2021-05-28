@@ -10,54 +10,614 @@ info:
     name: Apache 2.0,
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-  url: 'https://opera-ski-3000.codio-box.uk/api/'
-  description: Development server
+  - url: 'https://opera-ski-3000.codio-box.uk/api/'
+    description: Development server
 tags:
-  name: Users
-  description: API endpoints for user and user role management
-  name: Applications
-  description: Perform CRUD operations on applications
-  name: Roles
-  description: Perform CRUD operations on roles
-  name: Chats
-  description: API endpoints for chats and chat messages
+  - name: Users
+    description: API endpoints for user and user role management
+  - name: Applications
+    description: Perform CRUD operations on applications
+  - name: Roles
+    description: Perform CRUD operations on roles
+  - name: Chats
+    description: API endpoints for chats and chat messages
+
 
 paths:
 
   /users:
-    summary: gaming
+    summary: Represents a user
 
     get:
-      tags: Users
-      description: Returns list of all users
+      tags: 
+      - Users
+      description: Returns list of all users.
       responses: 
         '200': 
           description: Users obtained
           content:
             application/json:
               schema:
-                $ref: ./user.json#/definitions/userList
+                $ref: ./user.json#/definitions/listUser
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admins have access to see a list of all users
 
 
-  /users/{user_ID}:
-    summary: Represents an individual user
+
+  /users/{id}:
+    summary: Represents an individual user.
     parameters:
-      in: path
-      name: user_ID
-      schema:
-        type: integer
-      required: true
-      description: Numeric ID of the user
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: Numeric ID of the user.
       
     get:
-      tags: Users
-      description: Returns a single user
+      tags: 
+      - Users
+      description: Returns a single user.
       responses:
         '200':
           description: User obtained
           content:
             application/json:
               schema:
-                $ref: ./user.json#/definitions/userView
-          
+                $ref: ./user.json#/definitions/viewUser
+        '401':
+          description: Not logged in
+        '403':
+          description: Non-admins only have access to their own profile.
+        '404':
+          description: Not found
 
+    put:
+      tags: 
+      - Users
+      description: Update a user record.
+      requestBody:
+        description: Data the user wants to change.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/updateUser
+      responses:
+        '201':
+          description: User updated.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/updatedUser
+        '401':
+          description: Not logged in
+        '403':
+          description: Non-admin users can only update their own account
+        '404':
+          description: Not found
+
+
+    del:
+      tags: 
+      - Users
+      description: Delete a user record
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/deletedUser
+        '401':
+          description: Not logged in
+        '403':
+          description: Non-admins can only delete their own accounts.
+        '404':
+          description: Not found
+
+
+
+  /users/{id}/roles:
+    summary: The roles a specific user has.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: Numeric ID of the user.
+
+    get:
+      tags: 
+      - Roles
+      description: Get all roles a specific user has.
+      responses:
+        '200':
+          description: Listed all roles
+          content:
+              application/json:
+                schema:
+                  $ref: ./role.json#/definitions/listRole
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admin has access to view a users roles.
+        '404':
+          description: Not found
+
+    post:
+      tags: 
+      - Roles
+      description: Assign role to user
+      requestBody:
+        description: Data representing a role.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./role.json#/definitions/assignOrRemoveUserRole
+      responses:
+        '201':
+          description: Role assigned.
+          content:
+            application/json:
+              schema:
+                $ref: ./role.json#/definitions/assignedRole
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admins can assign roles to users
+        '404':
+          description: Not found
+        '409':
+          description: Cant assign the same role twice
+
+    del:
+      tags: 
+      - Roles
+      description: Unassign role from user
+      requestBody:
+        description: Data representing a role.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./role.json#/definitions/assignOrRemoveUserRole
+      responses:
+        '200':
+          description: Role unassigned.
+          content:
+            application/json:
+              schema:
+                $ref: ./role.json#/definitions/unassignedRole
+        '401':
+          description: Not logged in
+        '403':
+        description: Only admins can unassign roles from users
+        '404':
+          description: Not found
+        '409':
+          description: Can't remove a role the user doesn't have
+
+
+
+  /users/login:
+    summary: Authenticate user credentials for access to API operations
+
+    post:
+      tags: 
+      - Users
+      description: Log into server.
+      requestBody:
+        description: Data the user provides for authentication.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/logInUser
+      responses:
+        '200':
+          description: User logged in successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/loggedInUser
+        '401':
+          description: Incorrect login credentials
+        '404':
+          description: Not Found
+
+
+  /users/register:
+    summary: Registration of a user account
+
+    post:
+      tags: 
+      - Users
+      description: Create a new user.
+      requestBody:
+        description: Data that makes up a user.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/createUser
+      responses:
+        '201':
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/createdUser
+  
+
+  
+  /applications:
+    summary: Represents an application
+
+    get:
+      tags: 
+      - Applications
+      description: Returns list of all applications user has access to
+      responses:
+        '200':
+          description: Applications obtained
+          content:
+            application/json:
+              schema:
+                $ref: ./application.json#/definitions/listApplication
+        '401':
+          description: Not logged in
+        '404':
+          description: No applications found
+
+    post:
+      tags: 
+      - Applications
+      description: Create new application
+      requestBody:
+        description: Data to fill out new application
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./application.json#/definitions/createApplication
+      responses:
+        '201':
+          description: Application created
+          content:
+            application/json:
+              schema:
+                $ref: ./application.json#/definitions/createdApplication
+        '401':
+          description: Not logged in
+
+
+
+  /applications/{id}:
+    summary: Represents an individual application.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: Numeric ID of the application.
+
+    get:
+      tags: 
+      - Applications
+      description: Returns specific application
+      responses:
+        '200':
+          description: Obtained application
+          content:
+            application/json:
+              schema:
+                $ref: ./application.json#/definitions/viewApplication
+        '401':
+          description: Not logged in
+        '403':
+          description: Normal users can only access their own applications
+
+    put:
+      tags: 
+      - Applications
+      description: Update specific application
+      requestBody:
+        description: Data the user wants to change in the application
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./application.json#/definitions/updateApplication
+      responses:
+        '200':
+          description: Successfully updated application
+          content:
+            application/json:
+              schema:
+                $ref: ./application.json#/definitions/updatedApplication
+
+    del:
+      tags: 
+      - Applications
+      description: Delete specific application
+      responses:
+        '200':
+          description: Successfully deleted application
+          content:
+            application/json:
+              schema:
+                $ref: ./application.json#/definitions/deletedApplication
+  
+
+
+  /roles:
+    summary: Represents a role
+
+    get:
+      tags: 
+      - Roles
+      description: Returns all roles
+      responses:
+        '200':
+          description: Listed all roles
+          content:
+            application/json:
+              schema:
+                $ref: ./role.json#/definitions/listRole
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admins can access roles
+
+    post:
+      tags: 
+      - Roles
+      description: Create new role
+      requestBody:
+        description: Data to represent new role
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./role.json#/definitions/createRole
+      responses:
+        '201':
+          description: Successfully created role
+          content:
+            application/json:
+              schema:
+                $ref: ./role.json#/definitions/createdRole
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admins can create roles
+
+
+
+  /roles/{id}:
+    summary: Represents an individual role.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: Numeric ID of the role.
+
+    get:
+      tags: 
+      - Roles
+      description: Returns specific role
+      responses:
+        '200':
+          description: Displayed role
+          content:
+            application/json:
+              schema:
+                $ref: ./role.json#/definitions/viewRole
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admins can access roles
+
+    put:
+      tags: 
+      - Roles
+      description: Update specific role
+      requestBody:
+        description: Data the admin wants to change in the role
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./role.json#/definitions/updateRole
+      responses:
+        '200':
+          description: Successfully updated role
+          content:
+            application/json:
+              schema:
+                $ref: ./role.json#/definitions/updatedRole
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admins can update roles
+
+    del:
+      tags: 
+      - Roles
+      description: Delete specific role
+      responses:
+        '200':
+          description: Successfully deleted role
+          content:
+            application/json:
+              schema:
+                $ref: ./application.json#/definitions/deletedRole
+        '401':
+          description: Not logged in
+        '403':
+          description: Only admins can delete roles
+  
+
+
+  /chats:
+    summary: Returns list of all chats
+
+    get:
+      tags: 
+      - Chats
+      description: Returns all chats a user is a part of
+      responses:
+        '200':
+          description: Listed all chats
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/listChat
+        '401':
+          description: Not logged in
+
+    post:
+      tags: 
+      - Chats
+      description: Create new chat
+      responses:
+        '201':
+          description: Successfully created chat
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/createdChat
+        '401':
+          description: Not logged in
+
+
+
+  /chats/{id}:
+    summary: Represents a chat.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: Numeric ID of the chat.
+
+    get:
+      tags: 
+      - Chats
+      description: Returns chat messages for specific chat
+      responses:
+        '200':
+          description: Returns all chat messages
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/listMessage
+        '401':
+          description: Not logged in
+        '403':
+          description: Non-admin users can only access chats they're a part of
+
+    post:
+      tags: 
+      - Chats
+      description: Create new chat message
+      requestBody:
+        description: Data to fill out new chat message
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./chat.json#/definitions/createMessage
+      responses:
+        '201':
+          description: Successfully created message
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/createdMessage
+        '401':
+          description: Not logged in
+        '403':
+          description: Non-admin users can only access chats they're a part of
+
+    del:
+      tags: 
+      - Chats
+      description: Deletes a chat
+      responses:
+        '200':
+          description: Successfully deleted chat
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/deletedChat
+        '401':
+          description: Not logged in
+        '403':
+          description: Normal users can't delete chats
+
+
+
+  /chats/pending:
+    summary: Chats that are awaiting a response from a staff member
+
+    get:
+      tags: 
+      - Chats
+      description: Returns all chats that are of pending status
+      responses:
+        '200':
+          description: Listed all chats
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/listChat
+        '401':
+          description: Not logged in
+        '403':
+          description: Normal users cant access pending chats
+
+    put:
+      tags: 
+      - Chats
+      description: Update chat status from pending to in progress
+      responses:
+        '201':
+          description: Successfully changed chat status
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/changeStatusChat
+        '401':
+          description: Not logged in
+        '403':
+          description: Normal users can't change a chat's status.
+
+
+
+  /chats/removeMessage:
+
+    del:
+      tags: 
+      - Chats
+      description: Deletes a chat message
+      responses:
+        '200':
+          description: Successfully deleted chat message
+          content:
+            application/json:
+              schema:
+                $ref: ./chat.json#/definitions/deletedMessage
+        '401':
+          description: Not logged in
+        '403':
+          description: Normal users can't delete messages

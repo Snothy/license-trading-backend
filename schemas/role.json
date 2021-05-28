@@ -60,6 +60,13 @@
             }
         },
 
+        "listRole": {
+            "$id": "#userRole",
+            "title": "User Role",
+            "description": "List of all of the user's roles, visible to admin only.",
+            "type": "array",
+            "items": {"$ref": "#/definitions/viewRole"}
+          },
 
 
         "updatedRole": {
@@ -111,6 +118,49 @@
             },
             "required" : ["role_ID"],
             "additionalProperties" : false
+        },
+
+        "createdRole": {
+            "$id" : "#createdRole",
+            "Title" : "Created role",
+            "description" : "Data returned afer role was created",
+            "type" : "object",
+            "properties" : {
+                "ID" : {
+                    "description" : "The ID of the role.",
+                    "type" : "integer"
+                },
+                "created" : {
+                    "description" : "Boolean describing whether the role was created",
+                    "type" : "bool"
+                }
+            }
+        },
+
+        "assignedRole": {
+            "$id" : "#assignedRole",
+            "Title" : "Assigned role",
+            "description" : "Data returned afer role was assigned",
+            "type" : "object",
+            "properties" : {
+                "created" : {
+                    "description" : "Boolean describing whether the role was assigned",
+                    "type" : "bool"
+                }
+            }
+        },
+
+        "unassignedRole": {
+            "$id" : "#unassignedRole",
+            "Title" : "Unassigned role",
+            "description" : "Data returned afer role was unassigned",
+            "type" : "object",
+            "properties" : {
+                "removed" : {
+                    "description" : "Boolean describing whether the role was unassigned",
+                    "type" : "bool"
+                }
+            }
         }
 
 

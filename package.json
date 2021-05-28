@@ -29,6 +29,7 @@
     "openapi": "^1.0.0",
     "passport-jwt": "^4.0.0",
     "promise-mysql": "^5.0.3",
+    "redoc": "^2.0.0-rc.53",
     "role-acl": "^4.5.4",
     "supertest": "^6.1.3"
   },

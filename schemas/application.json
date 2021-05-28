@@ -102,6 +102,15 @@
         },
 
 
+        "listApplication": {
+            "$id": "#listApplication",
+            "title": "List application",
+            "description": "List of all applications user has access to.",
+            "type": "array",
+            "items": {"$ref": "#/definitions/viewApplication"}
+          },
+
+
         
         "updatedApplication": {
             "$id" : "#updatedApplication",
@@ -139,6 +148,23 @@
         },
 
 
+
+        "createdApplication": {
+            "$id" : "#createdApplication",
+            "Title" : "Created application",
+            "description" : "Data returned after an application was created.",
+            "type" : "object",
+            "properties" : {
+                "ID": {
+                    "description": "ID of the created application",
+                    "type": "integer"
+                  },
+                "created": {
+                    "description": "Boolean describing whether the application was created",
+                    "type": "boolean"
+                }
+            }
+        },
 
 
 

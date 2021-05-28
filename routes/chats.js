@@ -149,9 +149,11 @@ async function changeStatus (ctx) {
     }
 
     const chat_ID = ctx.request.body;
+    //this gives the chat to a staff member and changes the chat status from pending(1) to in progress(2)
     const result = await model.changeStatus(chat_ID.chat_ID, ctx.state.user.ID);
     if (result.affectedRows) {
-        return ctx.body = { success: true };
+        ctx.status = 200;
+        return ctx.body = { ID: chat_ID, updated: true };
     }
 }
 
