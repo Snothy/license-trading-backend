@@ -100,7 +100,7 @@ paths:
           description: Not found
 
 
-    del:
+    delete:
       tags: 
       - Users
       description: Delete a user record
@@ -175,7 +175,7 @@ paths:
         '409':
           description: Cant assign the same role twice
 
-    del:
+    delete:
       tags: 
       - Roles
       description: Unassign role from user
@@ -196,7 +196,7 @@ paths:
         '401':
           description: Not logged in
         '403':
-        description: Only admins can unassign roles from users
+          description: Only admins can unassign roles from users
         '404':
           description: Not found
         '409':
@@ -342,7 +342,7 @@ paths:
               schema:
                 $ref: ./application.json#/definitions/updatedApplication
 
-    del:
+    delete:
       tags: 
       - Applications
       description: Delete specific application
@@ -449,7 +449,7 @@ paths:
         '403':
           description: Only admins can update roles
 
-    del:
+    delete:
       tags: 
       - Roles
       description: Delete specific role
@@ -459,7 +459,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: ./application.json#/definitions/deletedRole
+                $ref: ./role.json#/definitions/deletedRole
         '401':
           description: Not logged in
         '403':
@@ -549,7 +549,7 @@ paths:
         '403':
           description: Non-admin users can only access chats they're a part of
 
-    del:
+    delete:
       tags: 
       - Chats
       description: Deletes a chat
@@ -606,7 +606,7 @@ paths:
 
   /chats/removeMessage:
 
-    del:
+    delete:
       tags: 
       - Chats
       description: Deletes a chat message
