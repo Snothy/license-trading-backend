@@ -12,8 +12,10 @@ npm run lint - Checks for eslint errors in the code. Using the standard style wi
 
 npm run jest / jest:watch - Performs tests on all routes to ensure the methods are functional
 
-OpenAPI documentation in docs/openapi
+OpenAPI documentation in docs/openapi/index.html
+
+JSDocs documentation in docs/jsdocs/index.html
 
 TODO
-jsdoc documentation
-scripts for building / deleting / populating the db?
+
+scripts for building / deleting / populating the db for testing purposes im not
