@@ -21,11 +21,15 @@
                 },
                 "telephone_number" : {
                     "description" : "The company's official phone number.",
-                    "type" : "integer"
+                    "type" : "string"
                 },
                 "insurance_company" : {
                     "description" : "The company's insurance company.",
                     "type" : "string"
+                },
+                "images" : {
+                    "description" : "List of all images",
+                    "type" : "object"
                 }
             },
             "required" : ["company_name", "address", "postcode", "telephone_number", "insurance_company"],

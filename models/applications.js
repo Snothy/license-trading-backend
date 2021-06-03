@@ -65,10 +65,29 @@ exports.getByName = async function getByName (name) {
  * @returns {object} - Information about the executed query
  */
 exports.createApplication = async function createApplication (application) {
-    application.status = 1; //application status to pending
-    const query = 'INSERT INTO applications SET ?;';
-    const data = await db.run_query(query, application);
-    return data;
+    let query;
+    let dataApp = 0;
+    //console.log(application.hasOwnProperty('images'));
+    //nsole.log(application);
+    const { images, ...applicationObj } = application;
+    applicationObj.status = 1; //application status to pending
+    query = 'INSERT INTO applications SET ?;';
+    dataApp = await db.run_query(query, applicationObj);
+    //console.log(dataApp);
+
+    if (Object.prototype.hasOwnProperty.call(application, 'images')) { //if the client submitted images //object.prototype to avoid eslint error for prototype-builtins
+        images.fileList.map(async (img) => {
+            const imgPath = img.response.links.path;
+            //console.log(imgPath);
+            //query = 'INSERT INTO images SET ?;';
+            query = 'INSERT INTO images(imageURL, application_ID) VALUES (?, ?);';
+            const values = [imgPath, dataApp.insertId];
+
+            await db.run_query(query, values);
+        });
+    }
+
+    return dataApp;
 };
 
 /**

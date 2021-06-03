@@ -1,4 +1,5 @@
 const Koa = require('koa');
+const cors = require('@koa/cors');
 const app = new Koa();
 const passport = require('koa-passport');
 
@@ -11,11 +12,19 @@ const users = require('./routes/users.js');
 const applications = require('./routes/applications.js');
 const roles = require('./routes/roles.js');
 const chats = require('./routes/chats.js');
+const uploads = require('./routes/uploads.js');
+
+const options = {
+    origin: '*'
+};
+
+app.use(cors(options));
 
 app.use(users.routes());
 app.use(applications.routes());
 app.use(roles.routes());
 app.use(chats.routes());
+app.use(uploads.routes());
 
 const port = process.env.PORT || 3000;
 

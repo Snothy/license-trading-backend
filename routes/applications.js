@@ -58,7 +58,9 @@ async function getById (ctx) {
 }
 
 async function createApplication (ctx) {
+    //console.log('creating app attempt');
     const application = ctx.request.body;
+    //console.log(application);
     application.user_ID = ctx.state.user.ID;
     const result = await model.createApplication(application);
 

@@ -126,9 +126,10 @@ exports.getChatByUserId = async function getChatByUserId (user_id) {
  * @returns {object} - Object representing a chat message
  */
 exports.getById = async function getById (chat_id) {
-    const query = 'SELECT * FROM chat_messages WHERE chat_ID = ?;';
+    const query = 'SELECT cm.ID, cm.chat_ID, users.username, users.firstName, users.lastName, cm.date_sent, cm.message_content FROM chat_messages AS cm JOIN users ON (users.ID = cm.user_ID) WHERE cm.chat_ID = ?;';
     const values = [chat_id];
     const data = await db.run_query(query, values);
+    //console.log(data);
     return data;
 };
 

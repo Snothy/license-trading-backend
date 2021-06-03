@@ -45,9 +45,9 @@
                     "description": "ID of the chat the message belongs to",
                     "type": "integer"
                 },
-                "user_ID": {
-                    "description": "ID of the user who sent the message",
-                    "type": "integer"
+                "username" : {
+                    "description" : "Name used to login.",
+                    "type" : "string"
                 },
                 "date_sent": {
                     "description": "The date and time the message was sent at",
@@ -121,13 +121,79 @@
             }
         },
 
+        
+        "viewChat": {
+            "$id": "#viewChat",
+            "Title": "View chat",
+            "description": "The data representing a chat between two users",
+            "type": "object",
+            "properties": {
+                "chat_ID": {
+                    "description": "ID of the chat record",
+                    "type" : "integer"
+                },
+                "username" : {
+                    "description" : "Name used to login.",
+                    "type" : "string"
+                },
+                "firstName" : {
+                    "description" : "The user's first name.",
+                    "type" : "string"
+                },
+                "lastName" : {
+                    "description" : "The user's last name.",
+                    "type" : "string"
+                },
+                "last_message": {
+                    "description": "The last message in the current chat.",
+                    "type": "string"
+                }
+            }
+        },
 
+        "viewMessage": {
+            "$id": "#viewMessage",
+            "Title": "View chat message",
+            "description": "The contents of a message by a user",
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "description": "ID of the chat message record",
+                    "type" : "integer"
+                },
+                "chat_ID": {
+                    "description": "ID of the chat the message belongs to",
+                    "type": "integer"
+                },
+                "username" : {
+                    "description" : "Name used to login.",
+                    "type" : "string"
+                },
+                "firstName" : {
+                    "description" : "The user's first name.",
+                    "type" : "string"
+                },
+                "lastName" : {
+                    "description" : "The user's last name.",
+                    "type" : "string"
+                },
+                "date_sent": {
+                    "description": "The date and time the message was sent at",
+                    "type": "string"
+                },
+                "message_content": {
+                    "description": "The user's message",
+                    "type": "string"
+                }
+            }
+        },
+        
         "listChat": {
             "$id": "#listChat",
             "title": "List chat",
             "description": "List of all chats visible to the user logged in.",
             "type": "array",
-            "items": {"$ref": "#/definitions/chat"}
+            "items": {"$ref": "#/definitions/viewChat"}
           },
 
         "listMessage": {
@@ -135,7 +201,7 @@
             "title": "List message",
             "description": "List of all messages as part of a chat.",
             "type": "array",
-            "items": {"$ref": "#/definitions/chatMessage"}
+            "items": {"$ref": "#/definitions/viewMessage"}
         },
 
         "deletedChat": {

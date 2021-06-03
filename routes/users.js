@@ -198,11 +198,10 @@ async function removeUserRole (ctx) {
 //LOGIN & REGISTER
 async function login (ctx) {
     const data = ctx.request.body;
-    //console.log(data);
     try {
         //console.log('a');
         const user = await model.findByUsername(data.username);
-
+        //console.log(user);
         if (user.length) {
             //VALID USERNAME
             //console.log('b');
@@ -213,7 +212,7 @@ async function login (ctx) {
                 //console.log('c');
                 const token = issueJwt.issueJwt(user);
                 ctx.status = 200;
-                return ctx.body = { login: true, token: token.token, expiresIn: token.expires };
+                return ctx.body = { ID: user[0].ID, role_name: user[0].role, login: true, token: token.token, expiresIn: token.expires };
             } else {
                 //INVALID PASSWORD | redirect to same page
                 ctx.status = 401;
