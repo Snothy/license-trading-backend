@@ -53,16 +53,17 @@ exports.getAllUser = async function getAllUser (user_id) {
     //show chats for user
 
     const query = `
-        SELECT c.ID AS chat_ID, u.username, u.firstName, u.lastName, c.status, IFNULL(cm.message_content, '') AS last_message
+        SELECT c.ID AS chat_ID, u2.username, u2.firstName, u2.lastName, c.status, IFNULL(cm.message_content, '') AS last_message
         FROM users AS u
         JOIN chats AS c ON (u.ID = c.user_ID)
+        JOIN users AS u2 ON (u2.ID = IFNULL(c.staff_ID, c.user_ID))
         LEFT JOIN (
             SELECT chat_ID, MAX(date_sent) AS max_date
             FROM chat_messages
             GROUP BY chat_ID
         ) AS lm ON (c.ID = lm.chat_ID)
         LEFT JOIN chat_messages AS cm ON (lm.chat_ID = cm.chat_ID AND lm.max_date = cm.date_sent)
-        WHERE c.user_ID = ?;
+        WHERE c.user_ID = ?; 
     `;
 
     const values = [user_id];
@@ -126,7 +127,20 @@ exports.getChatByUserId = async function getChatByUserId (user_id) {
  * @returns {object} - Object representing chat messages
  */
 exports.getById = async function getById (chat_id) {
-    const query = 'SELECT cm.ID, cm.chat_ID, users.username, users.firstName, users.lastName, cm.date_sent, cm.message_content FROM chat_messages AS cm JOIN users ON (users.ID = cm.user_ID) WHERE cm.chat_ID = ?;';
+    const query = `
+        SELECT cm.ID,
+        cm.chat_ID,
+        users.username,
+        users.firstName,
+        users.lastName,
+        cm.date_sent,
+        cm.message_content
+    FROM chat_messages AS cm
+        JOIN users
+            ON (users.ID = cm.user_ID)
+    WHERE cm.chat_ID = ?
+    ORDER BY cm.date_sent;
+    `;
     const values = [chat_id];
     const data = await db.run_query(query, values);
     //console.log(data);

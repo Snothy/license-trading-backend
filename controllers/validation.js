@@ -45,7 +45,6 @@ const validator = function (schema, resource) {
             v.validate(body, schema, validationOptions);
             await next();
         } catch (err) {
-            console.log('a');
             if (err instanceof ValidationError) {
                 //console.log(err);
                 ctx.status = 400;
