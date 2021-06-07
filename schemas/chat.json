@@ -117,7 +117,8 @@
                 "created": {
                     "description": "Boolean describing whether the message was created",
                     "type": "boolean"
-                }
+                },
+                "chatMessage": {"$ref": "#/definitions/chatMessage"}
             }
         },
 
@@ -143,6 +144,10 @@
                 "lastName" : {
                     "description" : "The user's last name.",
                     "type" : "string"
+                },
+                "status": {
+                    "description": "Number representing the status of the chat. 1 is pending, 2 is in progress, 3 is resolved.",
+                    "type": "integer"
                 },
                 "last_message": {
                     "description": "The last message in the current chat.",

@@ -114,3 +114,16 @@ exports.removeApplication = async function removeApplication (id) {
     const data = await db.run_query(query, values);
     return data;
 };
+
+/**
+ * Change the status of an existing application
+ * @param {object} application - Object representing an application, not necessarily containing all attributes
+ * @returns {object} - Information about the executed query
+ */
+exports.changeStatus = async function changeStatus (application) {
+    const query = 'UPDATE applications SET ? WHERE ID = ?;';
+    const values = [application, application.ID];
+    const data = await db.run_query(query, values);
+    //console.log(data);
+    return data;
+};

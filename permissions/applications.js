@@ -47,6 +47,13 @@ ac
     .grant('administrator')
     .extend('staff');
 
+ac
+    .grant('staff')
+    .execute('updateStatus')
+    .on('application')
+    .grant('administrator')
+    .extend('staff');
+
 exports.readAll = (requester) => {
     return ac
         .can(requester.role)
@@ -79,6 +86,15 @@ exports.delete = (requester, data) => {
         .can(requester.role)
         .context({ requester: requester.ID, owner: data.user_ID })
         .execute('delete')
+        .sync()
+        .on('application');
+};
+
+exports.updateStatus = (requester, data) => {
+    return ac
+        .can(requester.role)
+        .context({ requester: requester.ID, owner: data.user_ID })
+        .execute('updateStatus')
         .sync()
         .on('application');
 };

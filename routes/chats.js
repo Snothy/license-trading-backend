@@ -113,7 +113,8 @@ async function createMessage (ctx) {
     const result = await model.createMessage(message);
     if (result.affectedRows) {
         ctx.status = 201;
-        return ctx.body = { ID: chat_id, created: true };
+        const chatMessage = await model.getMessageById(result.insertId);
+        return ctx.body = { ID: chat_id, created: true, chatMessage: chatMessage };
     }
 }
 
@@ -143,14 +144,14 @@ async function getPending (ctx) {
 
 async function changeStatus (ctx) {
     const permission = can.updatePending(ctx.state.user);
-    console.log(permission);
+    //console.log(permission);
     if (!permission.granted) {
         return ctx.status = 403;
     }
 
-    const chat_ID = ctx.request.body;
+    const { chat_ID, status } = ctx.request.body;
     //this gives the chat to a staff member and changes the chat status from pending(1) to in progress(2)
-    const result = await model.changeStatus(chat_ID.chat_ID, ctx.state.user.ID);
+    const result = await model.changeStatus(chat_ID, ctx.state.user.ID, status);
     if (result.affectedRows) {
         ctx.status = 200;
         return ctx.body = { ID: chat_ID, updated: true };

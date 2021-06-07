@@ -149,7 +149,7 @@ async function getUserRoles (ctx) {
     } else {
         const result = await model.getUserRoles(id);
         if (result.length) {
-            ctx.body = { roles: result };
+            ctx.body = result;
         }
     }
 }

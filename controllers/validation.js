@@ -39,11 +39,13 @@ const validator = function (schema, resource) {
      */
     const handler = async function (ctx, next) {
         const body = ctx.request.body;
+        //console.log(body);
 
         try {
             v.validate(body, schema, validationOptions);
             await next();
         } catch (err) {
+            console.log('a');
             if (err instanceof ValidationError) {
                 //console.log(err);
                 ctx.status = 400;

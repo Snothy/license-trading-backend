@@ -57,7 +57,7 @@
                 },
                 "telephone_number" : {
                     "description" : "The company's official phone number.",
-                    "type" : "integer"
+                    "type" : "string"
                 },
                 "insurance_company" : {
                     "description" : "The company's insurance company.",
@@ -88,7 +88,7 @@
                 },
                 "telephone_number" : {
                     "description" : "The company's official phone number.",
-                    "type" : "integer"
+                    "type" : "string"
                 },
                 "insurance_company" : {
                     "description" : "The company's insurance company.",

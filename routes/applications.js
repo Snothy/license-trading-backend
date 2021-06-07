@@ -16,6 +16,8 @@ router.get('/:id([0-9]{1,})', auth, getById);
 router.put('/:id([0-9]{1,})', auth, bodyparser(), validateUpdateApplication, updateApplication);
 router.del('/:id([0-9]{1,})', auth, bodyparser(), removeApplication);
 
+router.put('/:id([0-9]{1,})/changeStatus', auth, bodyparser(), changeStatus);
+
 //STAFF CAN UPDATE AN APPLICATIONS STATUS
 //STAFF CAN FILTER AND SEARCH APPLICATIONS
 
@@ -73,6 +75,7 @@ async function createApplication (ctx) {
 
 async function updateApplication (ctx) {
     const id = ctx.params.id;
+    //console.log(ctx.request.body);
     //Checking if application exists
     let result = await model.getById(id);
     //console.log(result);
@@ -112,6 +115,27 @@ async function removeApplication (ctx) {
     const result = await model.removeApplication(id);
     if (result.affectedRows) {
         return ctx.body = { ID: id, deleted: true };
+    }
+}
+
+async function changeStatus (ctx) {
+    const id = ctx.params.id;
+    let result = await model.getById(id);
+    if (result.appData.length) {
+        //permission handling
+        const permission = can.updateStatus(ctx.state.user, result.appData[0]);
+        if (!permission.granted) {
+            return ctx.status = 403;
+        }
+
+        const application = result.appData[0];
+        const { ID, dateRegistered, ...body } = ctx.request.body;
+        Object.assign(application, body);
+        result = await model.changeStatus(application);
+        if (result.affectedRows) {
+            ctx.status = 200;
+            return ctx.body = { ID: id, updated: true };
+        }
     }
 }
 
