@@ -30,6 +30,7 @@ const loginToken = async function (login) {
         .send({ username: login.username, password: login.password })
         .expect((res) => {
             token = res.body.token;
+            //console.log(res.body);
         });
     return token;
 };
@@ -103,7 +104,7 @@ describe('POST Endpoints', function () {
         await request.agent(app)
             .post('/api/applications')
             .set('Authorization', 'Bearer ' + adminToken)
-            .send({ company_name: 'test1', address: 'test1', postcode: 'test1', telephone_number: 1, insurance_company: 'test1' })
+            .send({ company_name: 'test1', address: 'test1', postcode: 'test1', telephone_number: 'test1', insurance_company: 'test1' })
             .expect(201)
             .expect((res) => {
                 //console.log(res.body);
@@ -184,8 +185,10 @@ describe('GET Endpoints', function () {
             });
     });
     it('admin - get user profile (not own)', async function () {
+        const user = await users.findByUsername('user1');
+        const userID = user[0].ID;
         await request.agent(app)
-            .get('/api/users/1')
+            .get(`/api/users/${userID}`)
             .set('Authorization', 'Bearer ' + adminToken)
             .expect(200)
             .expect((res) => {
@@ -193,8 +196,10 @@ describe('GET Endpoints', function () {
             });
     });
     it('user - get user profile (not own)', async function () {
+        const user = await users.findByUsername('user1');
+        const userID = user[0].ID;
         await request.agent(app)
-            .get('/api/users/1')
+            .get(`/api/users/${userID}`)
             .set('Authorization', 'Bearer ' + userToken)
             .expect(403)
             .expect((res) => {
@@ -202,8 +207,10 @@ describe('GET Endpoints', function () {
             });
     });
     it('admin - get a users roles', async function () {
+        const user = await users.findByUsername('user1');
+        const userID = user[0].ID;
         await request.agent(app)
-            .get('/api/users/1/roles')
+            .get(`/api/users/${userID}/roles`)
             .set('Authorization', 'Bearer ' + adminToken)
             .expect(200)
             .expect((res) => {
