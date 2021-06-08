@@ -98,6 +98,10 @@
                 "lastName" : {
                     "description" : "The user's last name.",
                     "type" : "string"
+                },                
+                "username" : {
+                    "description" : "Name used to login.",
+                    "type" : "string"
                 }
             },
             "additionalProperties" : false
